@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="paper" data-zen="off">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>LEXICON VI · The Word Archive</title>
+  <meta name="description" content="An editorial word archive: nine ways to play, a separate education reading room, private pass-and-play battles, and a personal record by day." />
+  <meta name="theme-color" content="#f7f6f3" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%23181715%22/><text x=%2250%22 y=%2266%22 font-family=%22Georgia,serif%22 font-size=%2254%22 font-weight=%22700%22 fill=%22%23f7f6f3%22 text-anchor=%22middle%22>L</text></svg>">
+  <link rel="stylesheet" href="./css/style.css" />
+</head>
+<body>
+  <!-- Dynamic Island Navigation -->
+  <div class="island-wrap" id="islandWrap">
+    <nav class="dynamic-island" id="dynamicIsland" aria-label="Primary navigation">
+      <div class="island-top">
+        <button class="island-brand" id="homeBtn" type="button" aria-label="Archive Home">
+          <span class="island-brand-mark">L</span>
+        </button>
+        <div class="island-center" id="islandCurrentWrap">
+          <span class="island-live-dot" id="islandDot" aria-hidden="true"></span>
+          <span class="island-current t-text-swap" id="islandCurrent">Archive Home</span>
+          <span class="island-sub" id="islandSub">Vol. VI · Word &amp; story</span>
+        </div>
+        <div class="island-actions">
+          <button class="island-icon" id="themeQuickBtn" type="button" aria-label="Toggle Paper or Ink theme" title="Switch Paper / Ink theme">
+            <span class="t-icon-swap" id="themeIconSwap" data-state="a" aria-hidden="true">
+              <span class="t-icon" data-icon="a">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+              </span>
+              <span class="t-icon" data-icon="b">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+              </span>
+            </span>
+          </button>
+          <button class="island-icon" id="helpBtn" type="button" aria-label="How to play" title="How to play">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M9.2 9a2.8 2.8 0 0 1 4.6-2c1.2 1 .9 2.8-.4 3.7-.6.4-1.2.9-1.2 1.9"/><circle cx="12" cy="17" r="1" fill="currentColor" stroke="none"/></svg>
+          </button>
+          <button class="island-icon" id="statsBtn" type="button" aria-label="Personal record" title="Personal record">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 18V10"/><path d="M12 18V5"/><path d="M18 18v-7"/></svg>
+          </button>
+          <button class="island-icon" id="settingsBtn" type="button" aria-label="Settings" title="Settings">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="2.8"/><path d="M19.4 15a1.6 1.6 0 0 0 .32 1.77l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.6 1.6 0 0 0 15 19.4a1.6 1.6 0 0 0-1 .58 6 6 0 0 1-4 0 1.6 1.6 0 0 0-1-.58 1.6 1.6 0 0 0-1.77-.32l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.6 1.6 0 0 0 4.6 15a1.6 1.6 0 0 0-.58-1 6 6 0 0 1 0-4c.17-.36.38-.7.58-1A1.6 1.6 0 0 0 4.28 7.23l-.06-.06A2 2 0 1 1 7.05 4.34l.06.06A1.6 1.6 0 0 0 8.88 4.6c.36-.17.7-.38 1-.58a6 6 0 0 1 4 0c.36.17.7.38 1 .58A1.6 1.6 0 0 0 16.65 4.28l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.6 1.6 0 0 0 19.4 9a1.6 1.6 0 0 0 .58 1 6 6 0 0 1 0 4c-.17.36-.38.7-.58 1Z"/></svg>
+          </button>
+          <button class="island-expand" id="islandExpandBtn" type="button" aria-label="Expand navigation" aria-expanded="false">
+            <span class="t-icon-swap" id="islandExpandSwap" data-state="a" aria-hidden="true">
+              <span class="t-icon" data-icon="a">
+                <span class="expand-dots"><i></i><i></i><i></i></span>
+              </span>
+              <span class="t-icon" data-icon="b">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+              </span>
+            </span>
+          </button>
+        </div>
+      </div>
+      <div class="island-bottom" id="islandBottom">
+        <div class="island-bottom-inner">
+          <div class="island-modes" id="modeRail" role="group" aria-label="Play modes">
+            <span class="t-tabs-pill" id="modeRailPill" aria-hidden="true"></span>
+            <button class="island-pill active" type="button" data-mode="hero" aria-current="page">
+              <svg class="pill-svg" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 6.8 8 2.2l5.5 4.6v6.2a1 1 0 0 1-1 1h-9a1 1 0 0 1-1-1V6.8Z"/><path d="M6.2 14V9.2h3.6V14"/></svg>
+              <span>Home</span>
+            </button>
+            <button class="island-pill" type="button" data-mode="daily"><span class="pill-dot daily"></span><span>Daily</span></button>
+            <button class="island-pill" type="button" data-mode="4"><span>4-L</span></button>
+            <button class="island-pill" type="button" data-mode="5"><span>5-L</span></button>
+            <button class="island-pill" type="button" data-mode="6"><span>6-L</span></button>
+            <button class="island-pill" type="button" data-mode="movie"><span class="pill-dot movie"></span><span>Movie</span></button>
+            <button class="island-pill" type="button" data-mode="hangman"><span>Hangman</span></button>
+            <button class="island-pill" type="button" data-mode="marathon"><span class="pill-dot marathon"></span><span>Marathon</span></button>
+            <button class="island-pill" type="button" data-mode="anagram"><span>Anagram</span></button>
+            <button class="island-pill" type="button" data-mode="battle"><span class="pill-dot battle"></span><span>Battle</span></button>
+          </div>
+          <div class="island-sections">
+            <span class="island-section-meta">Nine play modes · One shared lexicon</span>
+            <button type="button" id="educationNavBtn" class="island-education t-learn">
+              <span>Education</span>
+              <span class="t-learn-chevron" aria-hidden="true">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"><path class="t-learn-arm t-learn-arm-top" d="M6 4L10 8"/><path class="t-learn-arm t-learn-arm-bot" d="M10 8L6 12"/></svg>
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+  </div>
+
+  <!-- HERO VIEW -->
+  <div id="heroView" class="view hero-view active">
+    <section class="hero">
+      <div class="hero-inner">
+        <div class="hero-left">
+          <div class="folio-ledger" aria-label="Archive edition metadata">
+            <span class="folio-chip">Vol. VI · Oxford Archive</span>
+            <span class="folio-sep" aria-hidden="true">·</span>
+            <span class="folio-item">20,220 Headwords</span>
+            <span class="folio-sep" aria-hidden="true">·</span>
+            <span class="folio-item">On-Device Record</span>
+          </div>
+          <h1 class="hero-title" id="heroHeadline"><span class="hero-line">A formal</span><span class="hero-line">archive for</span><span class="hero-line hero-italic">word puzzles.</span></h1>
+          <p class="hero-desc">
+            A quiet place to play with language. Nine puzzle modes share a curated 20,220-word lexicon; a separate reading room traces the histories behind 36 remarkable words.
+            <span class="hero-desc-note">Includes private two-reader pass-and-play battles, a personal record ranked by your own calendar days, and an unscored Zen setting.</span>
+          </p>
+          <div class="hero-ctas">
+            <button class="btn primary large t-learn btn-with-icon" type="button" data-mode="daily" data-cta="daily">
+              <span>Play Daily Dispatch</span>
+              <span class="t-learn-chevron" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path class="t-learn-arm t-learn-arm-top" d="M6 4L10 8"/><path class="t-learn-arm t-learn-arm-bot" d="M10 8L6 12"/></svg>
+              </span>
+            </button>
+            <button class="btn ghost large" type="button" id="exploreBtn">Explore games</button>
+            <button class="btn ghost large t-learn btn-with-icon" type="button" id="educationCta">
+              <span>Enter Education</span>
+              <span class="t-learn-chevron" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path class="t-learn-arm t-learn-arm-top" d="M6 4L10 8"/><path class="t-learn-arm t-learn-arm-bot" d="M10 8L6 12"/></svg>
+              </span>
+            </button>
+          </div>
+          <div class="hero-meta">
+            <div class="meta-item"><strong id="heroStatPlayed">0</strong><span>Played</span></div>
+            <div class="meta-sep" aria-hidden="true"></div>
+            <div class="meta-item"><strong id="heroStatStreak">0</strong><span>Day streak</span></div>
+            <div class="meta-sep" aria-hidden="true"></div>
+            <div class="meta-item"><strong>9</strong><span>Play modes</span></div>
+          </div>
+        </div>
+        <div class="hero-right">
+          <div class="t-tilt" id="heroPreviewTilt">
+            <div class="hero-preview t-tilt-card">
+              <div class="preview-inner">
+                <div class="preview-header">
+                  <span class="preview-tag">Illustrative grid · Daily word hidden</span>
+                  <span class="preview-live">Specimen</span>
+                </div>
+                <div class="preview-board" id="heroPreviewBoard"></div>
+                <div class="preview-footer">
+                  <span>Example only · not today’s word</span>
+                  <span class="muted" id="heroDailyWordHint">—</span>
+                </div>
+              </div>
+              <div class="t-tilt-glare" aria-hidden="true"></div>
+            </div>
+          </div>
+          <!-- Time Machine -->
+          <div class="time-machine">
+            <div class="tm-head"><span class="tm-title">Time Machine</span><span class="tm-sub">Revisit earlier days</span></div>
+            <div class="tm-controls">
+              <input type="date" id="timeMachineDate" class="tm-date" aria-label="Choose an earlier archive date" />
+              <button class="btn small t-learn btn-with-icon" type="button" id="timeMachineBtn">
+                <span>Travel</span>
+                <span class="t-learn-chevron" aria-hidden="true">
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path class="t-learn-arm t-learn-arm-top" d="M6 4L10 8"/><path class="t-learn-arm t-learn-arm-bot" d="M10 8L6 12"/></svg>
+                </span>
+              </button>
+            </div>
+            <div class="tm-calendar" id="tmCalendar"></div>
+          </div>
+          <div class="hero-ornament" aria-hidden="true"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="archive-grid-section">
+      <div class="section-head">
+        <h2>Collections · Oxford Expanded</h2>
+        <p>Nine ways to play, drawn from the Oxford 5000, dwyl 370k, and Wordle corpora.</p>
+      </div>
+      <div class="archive-grid">
+        <article class="archive-card featured" data-mode="daily">
+          <div class="card-top"><span class="card-badge daily">Daily Dispatch</span><span class="card-time">~3 min · 5,759 archive</span></div>
+          <h3>One word, every day</h3>
+          <p>The same five-letter headword for every reader. Turns over at local midnight and reveals a dictionary entry upon completion.</p>
+          <div class="card-tiles" aria-hidden="true"><span class="mini-tile correct">D</span><span class="mini-tile present">A</span><span class="mini-tile absent">I</span><span class="mini-tile correct">L</span><span class="mini-tile absent">Y</span></div>
+          <button class="card-cta t-learn btn-with-icon" type="button">
+            <span>Enter</span>
+            <span class="t-learn-chevron" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path class="t-learn-arm t-learn-arm-top" d="M6 4L10 8"/><path class="t-learn-arm t-learn-arm-bot" d="M10 8L6 12"/></svg></span>
+          </button>
+        </article>
+        <article class="archive-card" data-mode="4">
+          <div class="card-top"><span class="card-badge">4-Letter</span><span class="card-time">2,500 entries</span></div>
+          <h3>Concise Archive</h3>
+          <p>Four-letter headwords filtered from the Oxford 5000. Brisk and sharp.</p>
+          <div class="card-meta"><span>Oxford 5000</span><span>·</span><span>Quick</span></div>
+          <button class="card-cta t-learn btn-with-icon" type="button"><span>Play</span><span class="t-learn-chevron" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path class="t-learn-arm t-learn-arm-top" d="M6 4L10 8"/><path class="t-learn-arm t-learn-arm-bot" d="M10 8L6 12"/></svg></span></button>
+        </article>
+        <article class="archive-card" data-mode="5">
+          <div class="card-top"><span class="card-badge classic">Classic</span><span class="card-time">20,220 allowed</span></div>
+          <h3>Five-Letter Classic</h3>
+          <p>The complete five-letter corpus with 5,759 answer words and optional Hard Mode.</p>
+          <div class="card-meta"><span>5,759 answers</span><span>·</span><span>Standard</span></div>
+          <button class="card-cta t-learn btn-with-icon" type="button"><span>Play</span><span class="t-learn-chevron" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path class="t-learn-arm t-learn-arm-top" d="M6 4L10 8"/><path class="t-learn-arm t-learn-arm-bot" d="M10 8L6 12"/></svg></span></button>
+        </article>
+        <article class="archive-card" data-mode="6">
+          <div class="card-top"><span class="card-badge extended">Extended</span><span class="card-time">5,000 entries</span></div>
+          <h3>Six-Letter</h3>
+          <p>Six-letter vocabulary where prefixes and suffixes shift the deduction.</p>
+          <div class="card-meta"><span>Oxford + dwyl</span><span>·</span><span>Extended</span></div>
+          <button class="card-cta t-learn btn-with-icon" type="button"><span>Play</span><span class="t-learn-chevron" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path class="t-learn-arm t-learn-arm-top" d="M6 4L10 8"/><path class="t-learn-arm t-learn-arm-bot" d="M10 8L6 12"/></svg></span></button>
+        </article>
+        <article class="archive-card" data-mode="movie">
+          <div class="card-top"><span class="card-badge movie">Movie Finds</span><span class="card-time">112 titles</span></div>
+          <h3>Cinematic Archive</h3>
+          <p>Deduce the film title from its release year, genre, and a single editorial clue.</p>
+          <div class="card-meta"><span>112 titles</span><span>·</span><span>Clue</span></div>
+          <button class="card-cta t-learn btn-with-icon" type="button"><span>Play</span><span class="t-learn-chevron" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path class="t-learn-arm t-learn-arm-top" d="M6 4L10 8"/><path class="t-learn-arm t-learn-arm-bot" d="M10 8L6 12"/></svg></span></button>
+        </article>
+        <article class="archive-card" data-mode="hangman">
+          <div class="card-top"><span class="card-badge hangman">Hangman</span><span class="card-time">6 errors max</span></div>
+          <h3>Gallows</h3>
+          <p>Letter-by-letter deduction across five-letter Oxford headwords before the sixth error.</p>
+          <div class="card-meta"><span>5,759 pool</span><span>·</span><span>Classic</span></div>
+          <button class="card-cta t-learn btn-with-icon" type="button"><span>Play</span><span class="t-learn-chevron" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path class="t-learn-arm t-learn-arm-top" d="M6 4L10 8"/><path class="t-learn-arm t-learn-arm-bot" d="M10 8L6 12"/></svg></span></button>
+        </article>
+        <article class="archive-card" data-mode="marathon">
+          <div class="card-top"><span class="card-badge marathon">Marathon</span><span class="card-time">~8 min</span></div>
+          <h3>Marathon</h3>
+          <p>Chain four, five, and six letters in sequence. One life across all three stages. A longer challenge.</p>
+          <div class="card-meta"><span>3 stages</span><span>·</span><span>Endurance</span></div>
+          <button class="card-cta t-learn btn-with-icon" type="button"><span>Play</span><span class="t-learn-chevron" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path class="t-learn-arm t-learn-arm-top" d="M6 4L10 8"/><path class="t-learn-arm t-learn-arm-bot" d="M10 8L6 12"/></svg></span></button>
+        </article>
+        <article class="archive-card" data-mode="anagram">
+          <div class="card-top"><span class="card-badge anagram">Anagram</span><span class="card-time">~90 sec</span></div>
+          <h3>Anagram</h3>
+          <p>Rearrange the five shuffled letters into a valid archive word within six attempts.</p>
+          <div class="card-meta"><span>Multiset</span><span>·</span><span>Fast</span></div>
+          <button class="card-cta t-learn btn-with-icon" type="button"><span>Play</span><span class="t-learn-chevron" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path class="t-learn-arm t-learn-arm-top" d="M6 4L10 8"/><path class="t-learn-arm t-learn-arm-bot" d="M10 8L6 12"/></svg></span></button>
+        </article>
+        <article class="archive-card battle-card" data-mode="battle">
+          <div class="card-top"><span class="card-badge battle">Pass &amp; play</span><span class="card-time">Two readers · one device</span></div>
+          <h3>Battle</h3>
+          <p>Two private boards, one shared answer. Take turns, conceal your clues, and hand over the device.</p>
+          <div class="card-meta"><span>Private handoff</span><span>·</span><span>Five letters</span></div>
+          <button class="card-cta t-learn btn-with-icon" type="button"><span>Set up a match</span><span class="t-learn-chevron" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path class="t-learn-arm t-learn-arm-top" d="M6 4L10 8"/><path class="t-learn-arm t-learn-arm-bot" d="M10 8L6 12"/></svg></span></button>
+        </article>
+      </div>
+    </section>
+
+    <section class="reading-promo" aria-labelledby="readingPromoTitle">
+      <div class="reading-promo-copy">
+        <div class="folio-ledger">
+          <span class="folio-chip">The Reading Room</span>
+          <span class="folio-sep" aria-hidden="true">·</span>
+          <span class="folio-item">Education · 36 Sourced Stories</span>
+        </div>
+        <h2 id="readingPromoTitle">Every word has travelled.</h2>
+        <p>Follow a thread from a Greek myth, a Persian chess phrase, or a botanical notebook carried across an ocean. Read curated etymology stories without a board, a clock, or a score.</p>
+        <button class="btn primary t-learn btn-with-icon" type="button" id="educationPromoBtn">
+          <span>Explore Education</span>
+          <span class="t-learn-chevron" aria-hidden="true">
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path class="t-learn-arm t-learn-arm-top" d="M6 4L10 8"/><path class="t-learn-arm t-learn-arm-bot" d="M10 8L6 12"/></svg>
+          </span>
+        </button>
+      </div>
+      <div class="t-tilt" id="promoSpecimenTilt" aria-hidden="true">
+        <div class="reading-promo-example t-tilt-card">
+          <span class="specimen-meta">Specimen 01 · Ideas &amp; arts</span>
+          <strong>CLUE</strong>
+          <div class="specimen-origin">Old English <em>clēowen</em> · a ball of thread</div>
+          <p>A thread to find your way out of the labyrinth; a clue to find your way through a question.</p>
+          <div class="t-tilt-glare"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ideas-section">
+      <div class="section-head">
+        <h2>Inside the archive</h2>
+        <p>Choose a game, open the reading room, or inspect your own day-by-day record.</p>
+      </div>
+      <div class="ideas-grid">
+        <div class="idea-card done"><span class="idea-status">Available</span><h3>Expanded archive</h3><p>20,220 allowed words and 5,759 curated five-letter answers.</p></div>
+        <div class="idea-card done"><span class="idea-status">Available</span><h3>Time Machine</h3><p>Return to earlier daily puzzles by calendar date.</p></div>
+        <div class="idea-card done"><span class="idea-status">Available</span><h3>Definitions</h3><p>Read the dictionary entry for a solved word when online.</p></div>
+        <div class="idea-card done"><span class="idea-status">Available</span><h3>Share as Image</h3><p>Export a high-resolution editorial card of your board.</p></div>
+        <div class="idea-card done"><span class="idea-status">Available</span><h3>Hard Mode</h3><p>Carry revealed letters and positions into each new guess.</p></div>
+        <div class="idea-card done"><span class="idea-status">Available</span><h3>Marathon</h3><p>Progress through four, five, and six letters in one run.</p></div>
+        <div class="idea-card done"><span class="idea-status">Available</span><h3>Anagram</h3><p>Reconstruct the headword from its five shuffled letters.</p></div>
+        <div class="idea-card done"><span class="idea-status">Available</span><h3>Day record</h3><p>Track activity and streaks across local calendar days.</p></div>
+        <div class="idea-card done"><span class="idea-status">Available</span><h3>Battle</h3><p>Pass one device between two concealed boards.</p></div>
+        <div class="idea-card done"><span class="idea-status">Available</span><h3>Education</h3><p>Read 36 independent, sourced word histories offline.</p></div>
+        <div class="idea-card done"><span class="idea-status">Available</span><h3>Personal leaderboard</h3><p>Rank your own calendar days on this device, not other people.</p></div>
+        <div class="idea-card done"><span class="idea-status">Available</span><h3>Zen</h3><p>Switch to a calmer, unscored botanical palette without clocks.</p></div>
+      </div>
+    </section>
+
+    <section class="how-section">
+      <div class="how-grid">
+        <div class="how-text">
+          <h2>How to read the archive</h2>
+          <div class="how-steps">
+            <div class="how-step"><span class="step-num">I.</span><p><strong>Guess</strong> in six attempts. Viridian marks the exact spot, ochre marks a letter elsewhere in the word, and slate marks absence.</p></div>
+            <div class="how-step"><span class="step-num">II.</span><p><strong>Hard Mode:</strong> every revealed clue must appear in subsequent guesses.</p></div>
+            <div class="how-step"><span class="step-num">III.</span><p><strong>Time Machine:</strong> select any past calendar date to revisit that day’s dispatch without altering your scored streak.</p></div>
+          </div>
+        </div>
+        <div class="how-visual">
+          <div class="how-demo">
+            <div class="demo-row"><span class="mini-tile correct">W</span><span class="mini-tile correct">O</span><span class="mini-tile absent">R</span><span class="mini-tile present">D</span><span class="mini-tile absent">S</span></div>
+            <div class="demo-caption">Exact duplicate-letter accounting across every mode</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- GAME VIEW -->
+  <div id="gameView" class="view game-view">
+    <main class="page">
+      <section class="game-col">
+        <div class="game-header">
+          <h1 class="game-title" id="gameTitle">Daily Dispatch</h1>
+          <div class="game-subtitle" id="gameSubtitle">One puzzle per day</div>
+          <div class="game-badges" id="gameBadges"></div>
+        </div>
+        <div class="zen-notice" id="zenNotice" role="status">
+          <span class="zen-orb" aria-hidden="true"></span>
+          <span>Take your time. This entry is unscored.</span>
+        </div>
+        <section class="battle-setup" id="battleSetup" hidden aria-labelledby="battleSetupTitle">
+          <div class="folio-ledger">
+            <span class="folio-chip">Pass &amp; Play</span>
+            <span class="folio-sep" aria-hidden="true">·</span>
+            <span class="folio-item">Two readers · One word · One device</span>
+          </div>
+          <h2 id="battleSetupTitle">Set the table for two.</h2>
+          <p>Choose two names. Each reader has a private board and keyboard. Take one guess per turn, then conceal your clues before passing the device.</p>
+          <div class="battle-fields">
+            <label for="battleName1">Reader one<input id="battleName1" type="text" maxlength="18" placeholder="Reader One" autocomplete="off" /></label>
+            <label for="battleName2">Reader two<input id="battleName2" type="text" maxlength="18" placeholder="Reader Two" autocomplete="off" /></label>
+          </div>
+          <button class="btn primary large t-learn btn-with-icon" type="button" id="battleStartBtn">
+            <span>Start match</span>
+            <span class="t-learn-chevron" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path class="t-learn-arm t-learn-arm-top" d="M6 4L10 8"/><path class="t-learn-arm t-learn-arm-bot" d="M10 8L6 12"/></svg>
+            </span>
+          </button>
+          <p class="battle-rules">Six guesses each. If both solve in the same number of turns, the shorter active time wins; within one second is a draw. Zen matches use no clock and can finish level.</p>
+        </section>
+        <div class="battle-panel" id="battlePanel" hidden aria-live="polite">
+          <div class="battle-scoreboard" id="battleScoreboard"></div>
+          <div class="battle-turn-note t-text-swap" id="battleTurnNote"></div>
+          <div class="battle-controls">
+            <button class="btn primary t-learn btn-with-icon" type="button" id="battlePassBtn" hidden>
+              <span>Conceal and pass</span>
+              <span class="t-learn-chevron" aria-hidden="true">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path class="t-learn-arm t-learn-arm-top" d="M6 4L10 8"/><path class="t-learn-arm t-learn-arm-bot" d="M10 8L6 12"/></svg>
+              </span>
+            </button>
+            <button class="btn ghost" type="button" id="battleEndBtn">End match</button>
+          </div>
+        </div>
+        <div class="hint-bar" id="hintBar" aria-live="polite"></div>
+        <div class="board" id="board" role="grid" aria-label="Game board"></div>
+        <div class="keyboard" id="keyboard" aria-label="Virtual keyboard"></div>
+        <div class="game-actions" id="gameActions">
+          <button class="btn ghost" type="button" id="hintBtn">Hint</button>
+          <button class="btn ghost" type="button" id="giveUpBtn">Give up</button>
+        </div>
+        <button class="btn ghost mobile-back" type="button" id="mobileBackBtn">← Back to Archive</button>
+      </section>
+      <aside class="compendium" aria-label="Compendium">
+        <div class="comp-head"><h2 class="comp-title">Compendium</h2><span class="tag">Vol. VI</span></div>
+        <div class="comp-body">
+          <div id="compStatsSection">
+            <div class="stat-grid">
+              <div class="stat"><div class="stat-num" id="statPlayed">0</div><div class="stat-label">Played</div></div>
+              <div class="stat"><div class="stat-num" id="statWon">0</div><div class="stat-label">Solved</div></div>
+              <div class="stat"><div class="stat-num" id="statStreak">0</div><div class="stat-label">Day streak</div></div>
+              <div class="stat"><div class="stat-num" id="statMax">0</div><div class="stat-label">Best days</div></div>
+            </div>
+            <div class="comp-winrate"><span>Win rate</span><strong id="statWinRate">—</strong></div>
+            <div class="divider"></div>
+          </div>
+          <div>
+            <div class="comp-section-label">Themes</div>
+            <div class="theme-list">
+              <button class="theme-btn active" type="button" data-theme-btn="paper">Paper</button>
+              <button class="theme-btn" type="button" data-theme-btn="ink">Ink</button>
+              <button class="theme-btn" type="button" data-theme-btn="oxbridge">Oxbridge</button>
+              <button class="theme-btn" type="button" data-theme-btn="forest">Forest</button>
+              <button class="theme-btn" type="button" data-theme-btn="slate">Slate</button>
+            </div>
+          </div>
+          <div class="divider"></div>
+          <div id="definitionBox" class="definition-box" style="display:none">
+            <div class="def-head"><span class="def-title">Definition</span><span class="def-word" id="defWord"></span></div>
+            <div class="def-body" id="defBody"></div>
+          </div>
+          <div class="divider" id="defDivider" style="display:none"></div>
+          <div class="rules">
+            <p><strong>How to read.</strong><br/>Guess in six attempts.</p>
+            <div class="example-row"><div class="tile correct">A</div><div class="example-caption">Correct place.</div></div>
+            <div class="example-row"><div class="tile present">O</div><div class="example-caption">Present elsewhere.</div></div>
+            <div class="example-row"><div class="tile absent">Z</div><div class="example-caption">Absent.</div></div>
+          </div>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <!-- EDUCATION: independent reading room, not a scored game -->
+  <div id="educationView" class="view education-view">
+    <main class="education-main">
+      <header class="education-hero">
+        <div class="folio-ledger">
+          <span class="folio-chip">The Reading Room</span>
+          <span class="folio-sep" aria-hidden="true">·</span>
+          <span class="folio-item">Education · Vol. VI</span>
+          <span class="folio-sep" aria-hidden="true">·</span>
+          <span class="folio-item">36 Sourced Histories</span>
+        </div>
+        <h1>Every word<br/>has a <em>past.</em></h1>
+        <p>Small stories of language, travel, and unexpected origins. Browse at your own pace: no guesses, no timer, no score.</p>
+        <div class="education-actions">
+          <button class="btn primary t-learn btn-with-icon" type="button" id="eduSurpriseBtn">
+            <span>Surprise me</span>
+            <span class="t-learn-chevron" aria-hidden="true">
+              <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path class="t-learn-arm t-learn-arm-top" d="M6 4L10 8"/><path class="t-learn-arm t-learn-arm-bot" d="M10 8L6 12"/></svg>
+            </span>
+          </button>
+          <button class="btn ghost" type="button" id="eduBackBtn">Return to games</button>
+        </div>
+      </header>
+      <section class="education-feature" id="eduFeature" aria-label="Selected word" aria-live="polite"></section>
+      <section class="education-library" aria-labelledby="educationLibraryTitle">
+        <div class="education-library-head">
+          <div>
+            <div class="folio-ledger">
+              <span class="folio-chip">Open Shelf</span>
+              <span class="folio-sep" aria-hidden="true">·</span>
+              <span class="folio-item">Offline Etymology Collection</span>
+            </div>
+            <h2 id="educationLibraryTitle">Browse word stories.</h2>
+          </div>
+          <span id="eduCount" class="education-count" aria-live="polite"></span>
+        </div>
+        <label class="education-search-label" for="eduSearch">Find a word or an origin</label>
+        <div class="edu-search-wrap">
+          <svg class="edu-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input id="eduSearch" type="search" placeholder="Search words, roots, and stories…" autocomplete="off" />
+          <button type="button" id="eduSearchClear" class="edu-search-clear" aria-label="Clear search" hidden>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+          </button>
+        </div>
+        <div class="education-filters t-tabs" id="eduFilters" role="group" aria-label="Filter word stories"><span class="t-tabs-pill" id="eduFilterPill" aria-hidden="true"></span></div>
+        <div class="education-grid" id="eduGrid"></div>
+        <p id="eduEmpty" class="education-empty" hidden>No stories match your search. Try another word or category.</p>
+        <p class="education-source-note">Original editorial summaries, with a Wiktionary source linked for each headword. The reading room works offline; external source links require a connection. Etymology can be debated or revised as earlier attestations surface.</p>
+      </section>
+    </main>
+  </div>
+
+  <div class="battle-curtain" id="battleCurtain" role="dialog" aria-modal="true" aria-labelledby="battleCurtainTitle" hidden>
+    <div class="battle-curtain-card">
+      <div class="folio-ledger folio-ledger-center">
+        <span class="folio-chip">Lexicon · Pass &amp; Play</span>
+      </div>
+      <div class="battle-curtain-symbol" aria-hidden="true">
+        <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M17 4l4 4-4 4"/><path d="M3 8h18"/><path d="M7 20l-4-4 4-4"/><path d="M21 16H3"/></svg>
+      </div>
+      <h2 id="battleCurtainTitle">Pass the device.</h2>
+      <p id="battleCurtainCopy">Your private board is hidden.</p>
+      <button class="btn primary large t-learn btn-with-icon" type="button" id="battleReadyBtn">I’m ready →</button>
+      <button class="battle-curtain-exit" type="button" id="battleLeaveBtn">Leave this match</button>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <span>LEXICON VI · Word games &amp; an independent education collection</span>
+    <span>Static · Progress stays on this device</span>
+  </footer>
+  <div class="toast t-toast" id="toast" role="status" aria-live="polite"></div>
+
+  <!-- Modals -->
+  <div class="modal" id="settingsModal" aria-hidden="true">
+    <div class="modal-card">
+      <div class="modal-head">
+        <div><h2 class="modal-title">Settings</h2><div class="modal-sub">Oxford archive &amp; gameplay</div></div>
+        <button class="modal-close" type="button" data-close aria-label="Close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg></button>
+      </div>
+      <div class="modal-body prose">
+        <p><strong>Themes</strong></p>
+        <div class="theme-list modal-theme-list">
+          <button class="theme-btn" type="button" data-theme-btn="paper">Paper</button>
+          <button class="theme-btn" type="button" data-theme-btn="ink">Ink</button>
+          <button class="theme-btn" type="button" data-theme-btn="oxbridge">Oxbridge</button>
+          <button class="theme-btn" type="button" data-theme-btn="forest">Forest</button>
+          <button class="theme-btn" type="button" data-theme-btn="slate">Slate</button>
+        </div>
+        <p><strong>Gameplay</strong></p>
+        <div class="setting-row"><label><input type="checkbox" id="hardModeToggle"/> <span>Hard Mode · must reuse revealed hints</span></label></div>
+        <div class="setting-row"><label><input type="checkbox" id="zenModeToggle"/> <span>Zen Mode · unscored, calm colours, no clocks</span></label><p class="setting-help">Zen entries do not change your statistics, daily record, day leaderboard, or streak. Turning it off mid-entry will not score that entry.</p></div>
+        <div class="setting-row"><label><input type="checkbox" id="soundToggle"/> <span>Subtle key feedback</span></label></div>
+        <p class="muted modal-archive-note">Archive sizes: 4L 2,500 · 5L 20,220 allowed / 5,759 answers · 6L 5,000 · Movies 112. Sourced from Oxford 5000, dwyl 370k, and Wordle corpora.</p>
+      </div>
+      <div class="modal-foot"><button class="btn" type="button" data-close>Close</button></div>
+    </div>
+  </div>
+
+  <div class="modal" id="helpModal" aria-hidden="true">
+    <div class="modal-card">
+      <div class="modal-head">
+        <div><h2 class="modal-title">How to Play</h2><div class="modal-sub">Oxford archive edition</div></div>
+        <button class="modal-close" type="button" data-close aria-label="Close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg></button>
+      </div>
+      <div class="modal-body prose">
+        <p><strong>Word games:</strong> Guess in six attempts. Viridian is correctly placed; ochre is elsewhere in the answer.</p>
+        <p><strong>Daily &amp; Time Machine:</strong> A fresh daily puzzle at local midnight; revisit earlier dates without changing your scored daily record.</p>
+        <p><strong>Battle:</strong> Two readers, the same word, private boards. Each submits one guess, reviews their own clues, and conceals the screen before handing it over. The second reader gets the same number of attempts if the first solves.</p>
+        <p><strong>Hard Mode:</strong> Reuse revealed letters and positions.</p>
+        <p><strong>Zen:</strong> Calm, unscored play without clocks or ranking.</p>
+        <p><strong>Education:</strong> A separate, offline collection of 36 sourced word histories. Read without playing.</p>
+      </div>
+      <div class="modal-foot"><button class="btn primary" type="button" data-close>Begin Reading</button></div>
+    </div>
+  </div>
+
+  <div class="modal" id="statsModal" aria-hidden="true">
+    <div class="modal-card">
+      <div class="modal-head">
+        <div><h2 class="modal-title">Personal record</h2><div class="modal-sub">Saved only on this device</div></div>
+        <button class="modal-close" type="button" data-close aria-label="Close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg></button>
+      </div>
+      <div class="modal-body">
+        <div class="stat-grid stats-modal-grid">
+          <div class="stat"><div class="stat-num" id="statPlayedM">0</div><div class="stat-label">Played</div></div>
+          <div class="stat"><div class="stat-num" id="statWonM">0</div><div class="stat-label">Solved</div></div>
+          <div class="stat"><div class="stat-num" id="statStreakM">0</div><div class="stat-label">Day streak</div></div>
+          <div class="stat"><div class="stat-num" id="statMaxM">0</div><div class="stat-label">Best days</div></div>
+        </div>
+        <div class="heatmap-section">
+          <h3 class="stats-section-heading">Activity Heatmap</h3>
+          <div class="heatmap" id="heatmap"></div>
+          <div class="heatmap-legend"><span>Less</span><div class="legend-dots"><span class="dot l0"></span><span class="dot l1"></span><span class="dot l2"></span><span class="dot l3"></span><span class="dot l4"></span></div><span>More</span></div>
+        </div>
+        <section class="personal-board" aria-labelledby="leaderboardTitle">
+          <div class="personal-board-heading">
+            <div>
+              <h3 id="leaderboardTitle">Personal leaderboard · Your days</h3>
+              <p>Your completed, scored games grouped by the local day you played.</p>
+            </div>
+            <span class="personal-mark">Private</span>
+          </div>
+          <div class="leaderboard-tabs t-tabs" id="leaderboardTabsWrap" role="group" aria-label="Order personal days">
+            <span class="t-tabs-pill" id="leaderboardTabPill" aria-hidden="true"></span>
+            <button id="leaderboardBest" type="button" class="t-tab active" aria-pressed="true">Best days</button>
+            <button id="leaderboardRecent" type="button" class="t-tab" aria-pressed="false">Recent days</button>
+          </div>
+          <ol id="leaderboardList" class="leaderboard-list" aria-live="polite"></ol>
+          <p class="board-footnote" id="leaderboardNote">Best days: most solves, then win rate, then average attempts. Unscored Zen and Time Machine entries do not appear.</p>
+        </section>
+        <section class="battle-record" aria-labelledby="battleRecordTitle">
+          <h3 id="battleRecordTitle">Matches on this device</h3>
+          <div id="battleRecordList"></div>
+        </section>
+        <div class="history-list" id="historyList"></div>
+      </div>
+      <div class="modal-foot"><button class="btn" type="button" data-close>Continue</button></div>
+    </div>
+  </div>
+
+  <div class="modal" id="resultModal" aria-hidden="true">
+    <div class="modal-card">
+      <div class="modal-head">
+        <div><h2 class="modal-title" id="resultTitle">Well solved.</h2><div class="modal-sub" id="resultBody">You found the word.</div></div>
+        <button class="modal-close" type="button" data-close aria-label="Close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg></button>
+      </div>
+      <div class="modal-body prose">
+        <div id="battleResultSummary" class="battle-result-summary" hidden></div>
+        <div id="resultDefinition" class="result-definition-box" style="display:none"></div>
+        <p id="resultClosing">The archive appreciates precision.</p>
+        <canvas id="shareCanvas" width="1080" height="1080" style="display:none"></canvas>
+      </div>
+      <div class="modal-foot">
+        <button class="btn t-learn btn-with-icon" type="button" id="resultEducationBtn">
+          <span>Education</span>
+          <span class="t-learn-chevron" aria-hidden="true">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path class="t-learn-arm t-learn-arm-top" d="M6 4L10 8"/><path class="t-learn-arm t-learn-arm-bot" d="M10 8L6 12"/></svg>
+          </span>
+        </button>
+        <button class="btn btn-copy-state" type="button" id="shareBtn">
+          <span class="t-icon-swap" id="shareBtnIconSwap" data-state="a" aria-hidden="true">
+            <span class="t-icon" data-icon="a">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            </span>
+            <span class="t-icon" data-icon="b">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            </span>
+          </span>
+          <span class="t-text-swap" id="shareBtnLabel">Copy Text</span>
+        </button>
+        <button class="btn" type="button" id="shareImageBtn">Share as Image</button>
+        <button class="btn primary" type="button" id="newGameBtn">New Entry</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="./js/vendor/gsap.min.js"></script>
+  <script src="./js/vendor/Flip.min.js"></script>
+  <script type="module" src="./js/app.js"></script>
+</body>
+</html>
