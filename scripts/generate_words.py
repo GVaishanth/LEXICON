@@ -46,21 +46,34 @@ print(f"Oxford: {len(oxford)} | wordle_allowed: {len(wordle_allowed)} | sgb: {le
 def filter_len(words, l):
     return sorted(set([w for w in words if len(w)==l]))
 
+# Prohibited language is removed from every list before it is written out.
+PROHIBITED = {
+    'FUCK','FUCKS','FUCKER','FUCKED','FUCKING','SHIT','SHITS','SHITTY',
+    'CRAP','CRAPS','ARSE','ARSES','ARSEHOLE','ASS','ASSHOLE',
+    'BITCH','BITCHES','BASTARD','BASTARDS','CUNT','CUNTS',
+    'DICK','DICKS','PRICK','PRICKS','WANK','WANKS','WANKER','WANKED',
+    'PISS','PISSED','WHORE','WHORES','SLUT','SLUTS','PUSSY',
+    'TWAT','TWATS','BOLLOCKS','BUGGER',
+}
+
 four_oxford = filter_len(oxford, 4)
 four_dwyl = filter_len(dwyl, 4)
 four_combined = sorted(set(four_oxford + four_dwyl))
 # Keep common-ish: limit to maybe 2500 most frequent? We'll take all but ensure at least 1500
 four_final = four_combined[:2500]  # dwyl already alphabetical, but okay
+four_final = [w for w in four_final if w.upper() not in PROHIBITED]
 
 five_oxford = filter_len(oxford, 5)
 five_sgb = filter_len(sgb,5)
 five_answers = sorted(set(five_oxford + five_sgb))
+five_answers = [w for w in five_answers if w.upper() not in PROHIBITED]
 # Ensure at least 3000 answers
 # Add some from wordle_allowed that are common
 # We'll keep five_answers as ~3000-4000
 print(f"Five answers from oxford+sgb: {len(five_answers)}")
 
 five_allowed = sorted(set(wordle_allowed + filter_len(dwyl,5) + five_answers))
+five_allowed = [w for w in five_allowed if w.upper() not in PROHIBITED]
 print(f"Five allowed: {len(five_allowed)}")
 
 six_oxford = filter_len(oxford, 6)
@@ -69,6 +82,7 @@ six_combined = sorted(set(six_oxford + six_dwyl))
 print(f"Six combined: {len(six_combined)}")
 # Limit to maybe 5000
 six_final = six_combined[:5000]
+six_final = [w for w in six_final if w.upper() not in PROHIBITED]
 
 # Movie data - expanded to 120 titles
 movie_titles_raw = [
@@ -208,6 +222,7 @@ for title,year,genre,clue in movie_titles_raw:
     seen.add(clean)
     movie_final.append((title, year, genre, clue, clean))
 
+movie_final = [t for t in movie_final if t[4] not in PROHIBITED]
 print(f"Movies: {len(movie_final)}")
 
 # Write JS file

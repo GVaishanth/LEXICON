@@ -55,7 +55,7 @@ Either way, do not upload generated package folders; there are no packages to in
 | Time Machine | Replay an earlier daily date without changing the scored daily record or the personal-day ranking. |
 | Concise / Classic / Extended | Four-, five-, and six-letter boards; six attempts each. |
 | Cinematic Archive | Guess a film title from its year and clue. |
-| Gallows | Letter-by-letter Hangman. |
+| Gallows | Letter-by-letter Hangman; every round opens with a riddle clue for the word. |
 | Marathon | Solve four-, five-, and six-letter stages in sequence. |
 | Anagram | Unscramble the letters of a five-letter word in up to six attempts. |
 | Battle | Local two-reader, one-device match on a shared five-letter answer. |
@@ -77,7 +77,7 @@ Enable Zen in **Settings** for calmer colours, no match clock, and unscored play
 
 ## Word and story data
 
-- `js/words.js` contains the generated, bundled archive: 2,500 four-letter entries; 20,220 allowed five-letter guesses, including 5,759 possible answers; 5,000 six-letter entries; and 112 film titles. The archive-generation sources are [Oxford 3000/5000 lists](https://github.com/ittuann/The-Oxford-5000-Word-Lists), [Wordle allowed words](https://github.com/tabatkins/wordle-list), [SGB five-letter words](https://github.com/charlesreid1/five-letter-words), and [dwyl English words](https://github.com/dwyl/english-words).
+- `js/words.js` contains the generated, bundled archive: 2,495 four-letter entries; 20,207 allowed five-letter guesses, including 5,747 possible answers; 4,999 six-letter entries; and 112 film titles. The archive-generation sources are [Oxford 3000/5000 lists](https://github.com/ittuann/The-Oxford-5000-Word-Lists), [Wordle allowed words](https://github.com/tabatkins/wordle-list), [SGB five-letter words](https://github.com/charlesreid1/five-letter-words), and [dwyl English words](https://github.com/dwyl/english-words).
 - `js/education.js` is a **separately edited collection of 36 stories**, not a story for every game word. Each entry links to its Wiktionary source and is readable without a connection. The source links themselves need a connection.
 - Optional post-game definitions use [Free Dictionary API](https://dictionaryapi.dev/). If offline or unavailable, gameplay and Education still work. Google Fonts are optional; local fallback fonts are defined in CSS.
 
@@ -98,6 +98,7 @@ js/game.js                 Word-grid, Hangman, Anagram, Marathon, Battle engines
 js/leaderboard.js          Pure local-day grouping, ordering, and streak calculations
 js/education.js            36 offline sourced histories and filtering
 js/words.js                Pre-generated word and movie archive
+js/clues.js                Gallows riddle clue bank (690 five-letter words)
 js/vendor/gsap.min.js      GSAP 3.15 core, vendored locally (motion timelines)
 js/vendor/Flip.min.js      GSAP Flip plugin, vendored locally (layout re-flow)
 scripts/generate_words.py  Optional archive regeneration

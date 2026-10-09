@@ -1,4 +1,5 @@
 import { FOUR_LETTER, FIVE_LETTER_ANSWERS, FIVE_LETTER_ALLOWED, SIX_LETTER_ANSWERS, MOVIE_DATA, getRandomWord, getMovieMeta } from './words.js';
+import { getClueWord } from './clues.js';
 import { Game, HangmanGame, AnagramGame, MarathonGame, BattleGame } from './game.js';
 import { LORE_ENTRIES, LORE_CATEGORIES, filterLore } from './education.js';
 import { localDayKey, groupPersonalDays, rankPersonalDays, getDayStreaks } from './leaderboard.js';
@@ -180,8 +181,12 @@ function pushHistory(entry){
   renderTimeMachineCalendar();
   renderHeroPreview();
 }
-function showToast(message,ms=2400){
-  const toast=$('#toast');toast.textContent=message;toast.classList.add('show');
+function showToast(message,ms=2400,tone=''){
+  const toast=$('#toast');
+  toast.textContent=message;
+  toast.classList.remove('tone-info','tone-danger');
+  if(tone) toast.classList.add(tone);
+  toast.classList.add('show');
   clearTimeout(showToast.timeout);
   showToast.timeout=setTimeout(()=>toast.classList.remove('show'),ms);
 }
@@ -270,7 +275,7 @@ function renderMatchRecord(){
 
 // View selection. Education is deliberately not in the play-mode group.
 const titles={daily:'Daily Dispatch','4':'Four-Letter Archive','5':'Five-Letter Classic','6':'Six-Letter Archive',movie:'Movie Finds',hangman:'Hangman',marathon:'Marathon',anagram:'Anagram',battle:'Battle'};
-const subtitles={daily:'One word a day for every reader','4':'Four letters, six attempts','5':'The classic five-letter challenge','6':'Six letters, six attempts',movie:'A cinematic clue from the archive',hangman:'Find the word before the final error',marathon:'Three words · four, five, six letters',anagram:'Make a word from the shuffled letters',battle:'Two private boards · one shared word'};
+const subtitles={daily:'One word a day for every reader','4':'Four letters, six attempts','5':'The classic five-letter challenge','6':'Six letters, six attempts',movie:'A cinematic clue from the archive',hangman:'Find the word from its clue before the final error',marathon:'Three words · four, five, six letters',anagram:'Make a word from the shuffled letters',battle:'Two private boards · one shared word'};
 function canLeaveBattle(){
   return !(state.view==='game' && state.mode==='battle' && state.battle?.status==='playing') || window.confirm('Leave this match? Its progress will be lost.');
 }
@@ -612,7 +617,8 @@ function initGame(mode){
   $('#definitionBox').style.display='none';$('#defDivider').style.display='none';
   if(mode==='battle'){renderBadges();return}
   if(mode==='hangman'){
-    state.hangman=new HangmanGame(getRandomWord('5'));
+    const {word,clue}=getClueWord();
+    state.hangman=new HangmanGame(word,clue);
     renderBadges();renderHangman();renderKeyboard();return;
   }
   if(mode==='anagram'){
@@ -696,7 +702,14 @@ function renderHangman(){
   gallows.append(svg,make('div','wrong-count',`${hangman.wrong} / ${hangman.maxWrong} errors`));
   const letters=make('div','hangman-word');
   hangman.getRevealed().forEach(letter=>letters.append(make('span',`hm-letter ${letter==='_'?'':'revealed'}`,letter)));
-  wrap.append(gallows,letters);boardEl.append(wrap);
+  if(hangman.clue){
+    const clueCard=make('div','hangman-clue');
+    clueCard.append(make('span','hangman-clue-label','Clue'),make('p','hangman-clue-text',hangman.clue));
+    wrap.append(gallows,clueCard,letters);
+  } else {
+    wrap.append(gallows,letters);
+  }
+  boardEl.append(wrap);
 }
 const KEY_ROWS=['QWERTYUIOP'.split(''),'ASDFGHJKL'.split(''),['Enter',...'ZXCVBNM','⌫']];
 function bestKeyState(letter,game){
@@ -749,8 +762,13 @@ function playSound(){
 }
 function reportInvalid(result){
   shakeRow();
+  if(result.reason==='profane'){
+    showToast('That word is not permitted here.',3400,'tone-danger');
+    return;
+  }
   const words={incomplete:'Complete the row first.',invalid:'This word is not in the archive.',letters:'Use exactly the shuffled letters.',hard:result.message||'Use the revealed hints.'};
-  showToast(words[result.reason]||'This entry cannot be submitted.');
+  const notice=words[result.reason]||'This entry cannot be submitted.';
+  showToast(notice,result.reason==='invalid'?3400:2400,result.reason==='invalid'?'tone-info':'');
 }
 function flashSubmittedRow(rowIndex,then){
   const id=state.sessionId;
@@ -1094,6 +1112,11 @@ function giveUp(){
 }
 function bindIsland(){
   const island=$('#dynamicIsland');
+  const closeIsland=()=>{
+    if(island.classList.contains('expanded')){
+      island.classList.remove('expanded');syncIslandExpandUI();
+    }
+  };
   const toggleExpand=event=>{
     if(event) event.stopPropagation();
     island.classList.toggle('expanded');
@@ -1101,11 +1124,15 @@ function bindIsland(){
   };
   $('#islandExpandBtn').addEventListener('click',toggleExpand);
   $('.island-top').addEventListener('click',event=>{if(!event.target.closest('button')) toggleExpand()});
-  island.addEventListener('mouseenter',()=>{if(window.innerWidth>=980){island.classList.add('expanded');syncIslandExpandUI()}});
-  island.addEventListener('mouseleave',()=>{if(window.innerWidth>=980){island.classList.remove('expanded');syncIslandExpandUI()}});
+  // The navigation opens as a click-driven dropdown only; hover never opens or
+  // closes it, so pointer users on laptops can reach every wrapped pill.
   document.addEventListener('click',event=>{
-    if(!island.contains(event.target)&&island.classList.contains('expanded')){
-      island.classList.remove('expanded');syncIslandExpandUI();
+    if(!island.contains(event.target)) closeIsland();
+  });
+  document.addEventListener('keydown',event=>{
+    if(event.key==='Escape'&&island.classList.contains('expanded')){
+      closeIsland();
+      $('#islandExpandBtn').focus();
     }
   });
   $('#modeRail').addEventListener('click',event=>{

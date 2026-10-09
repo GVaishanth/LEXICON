@@ -1,18 +1,38 @@
 import assert from 'node:assert/strict';
-import { Game, BattleGame, checkHardMode, evaluateGuess } from '../js/game.js';
+import { Game, BattleGame, checkHardMode, evaluateGuess, HangmanGame, PROHIBITED } from '../js/game.js';
+import { HANGMAN_CLUES, getClueWord } from '../js/clues.js';
 import { FIVE_LETTER_ANSWERS, FOUR_LETTER, FIVE_LETTER_ALLOWED, SIX_LETTER_ANSWERS } from '../js/words.js';
 import { LORE_ENTRIES, LORE_CATEGORIES, filterLore } from '../js/education.js';
 import { groupPersonalDays, rankPersonalDays, getDayStreaks } from '../js/leaderboard.js';
 
-assert.equal(FOUR_LETTER.length,2500);
-assert.equal(FIVE_LETTER_ANSWERS.length,5759);
-assert.equal(FIVE_LETTER_ALLOWED.length,20220);
-assert.equal(SIX_LETTER_ANSWERS.length,5000);
+assert.equal(FOUR_LETTER.length,2495);
+assert.equal(FIVE_LETTER_ANSWERS.length,5747);
+assert.equal(FIVE_LETTER_ALLOWED.length,20207);
+assert.equal(SIX_LETTER_ANSWERS.length,4999);
 assert.ok(FIVE_LETTER_ALLOWED.includes('STANE') && !FIVE_LETTER_ANSWERS.includes('STANE'));
 assert.deepEqual(evaluateGuess('CRANE','STANE'),['absent','absent','correct','correct','correct']);
 assert.deepEqual(evaluateGuess('SLATE','STANE'),['correct','absent','correct','present','correct']);
 assert.equal(checkHardMode('SHAPE',['EELLS'],[['present','present','absent','absent','absent']]).ok,false);
 assert.equal(checkHardMode('SHEEP',['EELLS'],[['present','present','absent','absent','absent']]).ok,true);
+// Prohibited language: excluded from the answer pools and rejected at submission.
+assert.ok(!FOUR_LETTER.includes('FUCK') && !FIVE_LETTER_ANSWERS.includes('FUCKS'));
+assert.ok(!FIVE_LETTER_ALLOWED.includes('WHORE') && !SIX_LETTER_ANSWERS.includes('BUGGER'));
+const foul=new Game('5','CRANE');
+for(const letter of 'FUCKS') foul.typeLetter(letter);
+assert.equal(foul.submit().reason,'profane');
+assert.equal(foul.guesses.length,0);
+assert.equal(foul.currentRow,0);
+
+// Gallows rounds always carry a riddle clue, and no clue answers a prohibited word.
+const hmRound=getClueWord();
+assert.match(hmRound.word,/^[A-Z]{5}$/);
+assert.equal(HANGMAN_CLUES[hmRound.word],hmRound.clue);
+assert.ok(hmRound.clue.length>12 && !hmRound.clue.toLowerCase().includes(hmRound.word.toLowerCase()));
+for(const key of Object.keys(HANGMAN_CLUES)) assert.ok(!PROHIBITED.has(key));
+const hm=new HangmanGame('PLANT','What you water in the garden');
+assert.equal(hm.clue,'What you water in the garden');
+assert.equal(hm.answer,'PLANT');
+
 const anagram=new Game('anagram','APPLE');
 for(const letter of 'SHEEP') anagram.typeLetter(letter);
 assert.equal(anagram.submit().reason,'letters');

@@ -1,6 +1,18 @@
 // LEXICON Core Engine — Expanded with Hard Mode, Marathon, Anagram
 import { FIVE_LETTER_ALLOWED, FOUR_LETTER, SIX_LETTER_ANSWERS, MOVIE_DATA } from './words.js';
 
+// Language the archive refuses to accept as a submission. The answer pools in
+// words.js are cleaned of these entries at generation time, so rejecting here
+// can never make a round unsolvable.
+export const PROHIBITED = new Set([
+  'FUCK','FUCKS','FUCKER','FUCKED','FUCKING','SHIT','SHITS','SHITTY',
+  'CRAP','CRAPS','ARSE','ARSES','ARSEHOLE','ASS','ASSHOLE',
+  'BITCH','BITCHES','BASTARD','BASTARDS','CUNT','CUNTS',
+  'DICK','DICKS','PRICK','PRICKS','WANK','WANKS','WANKER','WANKED',
+  'PISS','PISSED','WHORE','WHORES','SLUT','SLUTS','PUSSY',
+  'TWAT','TWATS','BOLLOCKS','BUGGER'
+]);
+
 export function evaluateGuess(guess, answer){
   const g = guess.toUpperCase().split('');
   const a = answer.toUpperCase().split('');
@@ -96,6 +108,7 @@ export class Game {
     if(this.status!=='playing') return {ok:false, reason:'finished'};
     if(this.currentCol!==this.wordLength) return {ok:false, reason:'incomplete'};
     const guess = this.board[this.currentRow].map(t=>t.letter).join('');
+    if(PROHIBITED.has(guess)) return {ok:false, reason:'profane'};
     if(!isValidWord(guess, this.mode)) return {ok:false, reason:'invalid'};
     if(this.mode==='anagram' && [...guess].sort().join('')!==[...this.answer].sort().join('')){
       return {ok:false, reason:'letters'};
@@ -125,8 +138,9 @@ export class Game {
 }
 
 export class HangmanGame {
-  constructor(answer){
+  constructor(answer, clue=''){
     this.answer = answer.toUpperCase().replace(/[^A-Z]/g,'');
+    this.clue = clue;
     this.guessed = new Set();
     this.wrong = 0;
     this.maxWrong = 6;

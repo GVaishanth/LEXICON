@@ -12,9 +12,12 @@
 - `border` (Structural Rule): `#dfdbd2` (dark `ink` theme: `#2c2f2c`)
 - `border-2` (Strong Rule): `#cbc5b9` (dark `ink` theme: `#3d413d`)
 - `accent` (Archival Umber / Brass): `#7a4e24` (dark `ink` theme: `#d9b78e`)
-- `tile-correct` (Signal Viridian): `#1f5c3f` (contrast ≥ 7.5:1 on white)
-- `tile-present` (Signal Ochre): `#855d10` (contrast ≥ 5.4:1 on white)
-- `tile-absent` (Signal Slate): `#525860` (contrast ≥ 7.0:1 on white)
+- `tile-correct` (Signal Viridian): `#1fae5e` — deliberately bright so solved states read apart at a glance; `tile-fg` ink on it ≈ 6.3:1
+- `tile-present` (Signal Amber): `#efc420` — bright yellow; `tile-fg` ink on it ≈ 10.4:1
+- `tile-absent` (Signal Chalk): `#d0d4da` — whitened grey that recedes behind the two positive states; `tile-fg` ink on it ≈ 12.2:1
+- `tile-fg` (Solved-Tile Ink): `#17191b` — the single letter colour on every solved tile, key state, legend chip, Time Machine day and Marathon step; all themes and Zen share this trio so one learned green/amber/chalk mapping holds everywhere.
+- `toast-info` (Signal Cerulean): `#1f5fc4` (white text ≈ 6.0:1) — informational notices, e.g. a word that is not in the archive.
+- `toast-danger` (Signal Garnet): `#a83226` (white text ≈ 6.7:1) — prohibited-language notices.
 - `movie-accent` (Cinema Oxblood): `#7c2d36` (contrast ≥ 8.5:1 on white)
 - `marathon-accent` (Burnt Amber): `#8a420d` (contrast ≥ 6.8:1 on white)
 - `anagram-accent` (Botanical Deep): `#165b3a` (contrast ≥ 7.9:1 on white)
@@ -68,7 +71,7 @@
   - **Error State Shake (`p12`)**: 4-segment cubic-bezier horizontal shake (`28.57%`, `57.14%`, `78.57%`, `100%`).
   - **Sliding Pill Tabs (`p16`)**: measured `translateX` and `width` pill indicator for tablists and filter bars.
   - **3D Tilt Specimen Plate (`p19`)**: pointer-tracked `rotateX`/`rotateY` and radial glare driven by `gsap.quickTo()`.
-  - **Grid-Rows Accordion (`p21`)**: `grid-template-rows: 0fr ↔ 1fr` with inner blur/opacity for the Dynamic Island drawer.
-  - **Asymmetric Toast (`p22`)**: rises from `translateY(12px) scale(0.96)` with `blur(2px)`.
+  - **Grid-Rows Accordion (`p21`)**: `grid-template-rows: 0fr ↔ 1fr` with inner blur/opacity for the Dynamic Island drawer. The drawer is click-driven only (⋯ button, title bar, outside click, or Escape) — never hover — and the mode pills wrap to the available width, so every option stays visible at any screen size instead of hiding behind horizontal scrolling.
+  - **Asymmetric Toast (`p22`)**: rises from `translateY(12px) scale(0.96)` with `blur(2px)`. Tones: `tone-info` paints the pill Cerulean for archive notices, `tone-danger` paints it Garnet for prohibited language; both keep white text at ≥ 6:1.
   - **Opening Chevron Hover (`p24`)**: two-arm SVG chevron that shifts right and opens its angle on hover.
   - **GSAP Timelines & Flip**: `gsap.matchMedia()`-guarded hero entrance sequence, 3D tile reveal & victory cascade, and `Flip` layout transitions in the Education collection.
