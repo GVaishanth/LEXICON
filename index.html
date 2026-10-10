@@ -1,11 +1,14 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="paper" data-zen="off">
+<html lang="en" data-theme="teal" data-zen="off">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>LEXICON VI · The Word Archive</title>
   <meta name="description" content="An editorial word archive: nine ways to play, a separate education reading room, private pass-and-play battles, and a personal record by day." />
   <meta name="theme-color" content="#f7f6f3" />
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%23181715%22/><text x=%2250%22 y=%2266%22 font-family=%22Georgia,serif%22 font-size=%2254%22 font-weight=%22700%22 fill=%22%23f7f6f3%22 text-anchor=%22middle%22>L</text></svg>">
   <link rel="stylesheet" href="./css/style.css?v=2" />
 </head>
@@ -23,7 +26,7 @@
           <span class="island-sub" id="islandSub">Vol. VI · Word &amp; story</span>
         </div>
         <div class="island-actions">
-          <button class="island-icon" id="themeQuickBtn" type="button" aria-label="Toggle Paper or Ink theme" title="Switch Paper / Ink theme">
+          <button class="island-icon" id="themeQuickBtn" type="button" aria-label="Toggle Teal or Ink theme" title="Switch Teal / Ink theme">
             <span class="t-icon-swap" id="themeIconSwap" data-state="a" aria-hidden="true">
               <span class="t-icon" data-icon="a">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
@@ -376,10 +379,10 @@
           <div>
             <div class="comp-section-label">Themes</div>
             <div class="theme-list">
-              <button class="theme-btn active" type="button" data-theme-btn="paper">Paper</button>
+              <button class="theme-btn" type="button" data-theme-btn="panther">Panther</button>
               <button class="theme-btn" type="button" data-theme-btn="ink">Ink</button>
-              <button class="theme-btn" type="button" data-theme-btn="oxbridge">Oxbridge</button>
-              <button class="theme-btn" type="button" data-theme-btn="forest">Forest</button>
+              <button class="theme-btn" type="button" data-theme-btn="blue">Blue</button>
+              <button class="theme-btn active" type="button" data-theme-btn="teal">Teal</button>
               <button class="theme-btn" type="button" data-theme-btn="slate">Slate</button>
             </div>
           </div>
@@ -471,6 +474,7 @@
     <span>LEXICON VI · Word games &amp; an independent education collection</span>
     <span>Static · Progress stays on this device</span>
   </footer>
+  <div id="srStatus" class="sr-only" role="status" aria-live="polite"></div>
   <div class="toast t-toast" id="toast" role="status" aria-live="polite"></div>
 
   <!-- Modals -->
@@ -483,10 +487,10 @@
       <div class="modal-body prose">
         <p><strong>Themes</strong></p>
         <div class="theme-list modal-theme-list">
-          <button class="theme-btn" type="button" data-theme-btn="paper">Paper</button>
+          <button class="theme-btn" type="button" data-theme-btn="panther">Panther</button>
           <button class="theme-btn" type="button" data-theme-btn="ink">Ink</button>
-          <button class="theme-btn" type="button" data-theme-btn="oxbridge">Oxbridge</button>
-          <button class="theme-btn" type="button" data-theme-btn="forest">Forest</button>
+          <button class="theme-btn" type="button" data-theme-btn="blue">Blue</button>
+          <button class="theme-btn" type="button" data-theme-btn="teal">Teal</button>
           <button class="theme-btn" type="button" data-theme-btn="slate">Slate</button>
         </div>
         <p><strong>Gameplay</strong></p>

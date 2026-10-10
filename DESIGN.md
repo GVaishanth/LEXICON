@@ -25,6 +25,8 @@
 
 ## Typography
 - **UI & Controls (`--font-sans`)**: `'Albert Sans', system-ui, -apple-system, sans-serif`
+- **Home page voice (`--font-funky`)**: `'Comic Sans MS', 'Chalkboard SE', 'Marker Felt', cursive` (applied to the Home view only)
+- **Education voice (`--font-formal`)**: `'Times New Roman', Times, Garamond, serif` (applied to the Education view only)
 - **Display & Headwords (`--font-display`)**: `'Playfair Display', Georgia, serif`
 - **Editorial Prose (`--font-serif`)**: `'Source Serif 4', Georgia, serif`
 - **Tabular Clocks & Catalogue Codes (`--font-mono`)**: `'JetBrains Mono', ui-monospace, monospace`
@@ -75,3 +77,10 @@
   - **Asymmetric Toast (`p22`)**: rises from `translateY(12px) scale(0.96)` with `blur(2px)`. Tones: `tone-info` paints the pill Cerulean for archive notices, `tone-danger` paints it Garnet for prohibited language; both keep white text at ≥ 6:1.
   - **Opening Chevron Hover (`p24`)**: two-arm SVG chevron that shifts right and opens its angle on hover.
   - **GSAP Timelines & Flip**: `gsap.matchMedia()`-guarded hero entrance sequence, 3D tile reveal & victory cascade, and `Flip` layout transitions in the Education collection.
+
+
+## iOS 27 Celosia Palette
+- Teal (default, light): gradient `#f3c276 → #e5a469 → #a98be0` (sandy gold to soft purple).
+- Ink (dark): deep indigo `#15162c` with silvery-blue gradient `#565cae → #b7c6ee`.
+- Blue: `#3f7fd8 → #8a66dd`. Teal: `#0f8d84 → #6d78d8`. Slate Gray: `#5b6472 → #8f80c7`.
+- Zen keeps its calm green gradients. Legacy ids `paper`, `gold` map to `panther`; `oxbridge` maps to `blue`; `forest` maps to `teal`. Panther is a dark purple theme that replaced Gold.

@@ -13,7 +13,7 @@ const storage={
 const readJSON=(key,fallback)=>{try{return JSON.parse(storage.get(key))??fallback}catch{return fallback}};
 const savedStats=readJSON('lexicon.v1.stats',{});
 const state={
-  view:'hero',mode:'hero',theme:storage.get('lexicon.v1.theme')||'paper',
+  view:'hero',mode:'hero',theme:storage.get('lexicon.v1.theme')||'teal',
   hard:storage.get('lexicon.v1.hard')==='true',zen:storage.get('lexicon.v1.zen')==='true',
   sound:storage.get('lexicon.v1.sound')==='true',
   stats:{played:Number(savedStats.played)||0,won:Number(savedStats.won)||0,byMode:savedStats.byMode||{}},
@@ -605,8 +605,6 @@ function renderBadges(){
   if(game?.hardMode || (state.mode==='battle' && state.hard && !state.battle)) add('Hard Mode','hard');
   if(state.zen) add('Zen · unscored','zen');
   else if(state.unranked && !state.timeMachine) add('Unscored entry');
-  if(state.mode==='marathon') add('Marathon','marathon');
-  if(state.mode==='anagram') add('Anagram','anagram');
 }
 function initGame(mode){
   state.game=null;state.hangman=null;state.anagram=null;state.marathon=null;
@@ -657,8 +655,22 @@ function renderMarathonProgress(){
   });
   hintBar.replaceChildren(host);
 }
+/* Home: a sheet slides up showing the time and the LEXICON name, then slides away. */
+function swipeHome(run){
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches||!document.body.animate){run();return}
+  const sheet=make('div','swipe-sheet');sheet.setAttribute('aria-hidden','true');
+  const clock=make('div','swipe-time',new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}));
+  sheet.append(clock,make('div','swipe-name','LEXICON'));
+  document.body.append(sheet);
+  sheet.animate([{transform:'translateY(100%)'},{transform:'translateY(0)'}],{duration:460,easing:'cubic-bezier(.2,.8,.2,1)',fill:'forwards'}).finished.then(()=>{
+    run();
+    setTimeout(()=>{
+      sheet.animate([{transform:'translateY(0)'},{transform:'translateY(-100%)'}],{duration:520,easing:'cubic-bezier(.6,0,.2,1)',fill:'forwards'}).finished.then(()=>sheet.remove(),()=>sheet.remove());
+    },900);
+  },()=>{});
+}
 function renderAnagramHint(){
-  const outer=make('div','movie-hint');outer.append(make('span','tag','Anagram'));
+  const outer=make('div','movie-hint');
   const letters=make('div','anagram-letters');
   [...state.anagram.shuffled].forEach(letter=>letters.append(make('span','mini-tile',letter)));
   outer.append(letters,make('span','clue',`${state.anagram.guesses.length} / 6 attempts`));
@@ -729,8 +741,10 @@ function renderKeyboard(){
   KEY_ROWS.forEach(keys=>{
     const row=make('div','kb-row');
     keys.forEach(letter=>{
+      const gone=!!(hangman && /^[A-Z]$/.test(letter) && hangman.guessed.has(letter) && !hangman.answer.includes(letter));
       const button=make('button',`key ${letter==='Enter'||letter==='⌫'?'wide':''}`,letter);
       button.type='button';button.dataset.key=letter;
+      if(gone){button.classList.add('gone');button.tabIndex=-1;button.setAttribute('aria-hidden','true');button.disabled=true;button.textContent='';row.append(button);return}
       button.setAttribute('aria-label',letter==='⌫'?'Delete letter':letter==='Enter'?'Submit guess':letter);
       if(game && /^[A-Z]$/.test(letter)){
         const stateName=bestKeyState(letter,game);if(stateName) button.classList.add(stateName);
@@ -783,13 +797,74 @@ function flashSubmittedRow(rowIndex,then){
     state.inputLocked=false;renderBoard();renderKeyboard();then();
   },Math.min(900,520+(currentGame()?.wordLength||5)*60));
 }
+function announce(text){
+  const el=$('#srStatus');if(!el) return;
+  el.textContent='';requestAnimationFrame(()=>{el.textContent=text});
+}
+function hangmanGuess(letter){
+  const h=state.hangman;if(!h) return;
+  const wrong=!h.answer.includes(letter);
+  h.guess(letter);playSound();renderHangman();
+  if(h.status==='won') announce(`You won. The word is ${h.answer}.`);
+  else if(h.status==='lost') announce(`You lost. The word was ${h.answer}.`);
+  else announce(wrong?`${letter} is not in the word. ${h.maxWrong-h.wrong} errors left.`:`${letter} is in the word. ${h.getRevealed().join(' ')}.`);
+  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const key=wrong&&!reduce?keyboardEl.querySelector(`[data-key="${letter}"]`):null;
+  if(key){
+    key.classList.add('cut');key.disabled=true;
+    setTimeout(()=>{if(state.hangman===h) renderKeyboard()},760);
+  } else renderKeyboard();
+  if(h.status!=='playing') finishHangman();
+}
+/* Page change. From a game card, the card copy grows to full screen, the game
+   opens underneath, then the note peels away from the bottom-right corner. */
+function peelTo(run,fromEl,title=''){
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches||!document.body.animate){run();return}
+  const sheet=make('div','peel-sheet');sheet.setAttribute('aria-hidden','true');
+  const label=title?make('div','peel-title',title):null;
+  const finishPeel=()=>{
+    const done=()=>sheet.remove();
+    sheet.animate([
+      {clipPath:'polygon(0 0,100% 0,100% 100%,100% 100%,0 100%)'},
+      {clipPath:'polygon(0 0,100% 0,100% 45%,45% 100%,0 100%)',offset:.55},
+      {clipPath:'polygon(0 0,100% 0,0 0,0 0,0 0)'}
+    ],{duration:900,easing:'cubic-bezier(.45,0,.2,1)',fill:'forwards'}).finished.then(done,done);
+  };
+  // Opens the game, then moves the big sheet title into the game title's place.
+  const reveal=()=>{
+    const from=label?label.getBoundingClientRect():null;
+    run();
+    const target=document.querySelector('#gameView.active #gameTitle');
+    if(from&&target&&from.width&&target.offsetWidth){
+      const to=target.getBoundingClientRect();
+      const dx=(from.left+from.width/2)-(to.left+to.width/2);
+      const dy=(from.top+from.height/2)-(to.top+to.height/2);
+      const sc=to.width/from.width;
+      target.animate([{transform:`translate(${dx}px,${dy}px) scale(${sc})`},{transform:'none'}],{duration:760,easing:'cubic-bezier(.2,.8,.2,1)'});
+    }
+    finishPeel();
+  };
+  const hold=()=>{if(label) sheet.append(label);setTimeout(reveal,label?650:260)};
+  if(!fromEl){document.body.append(sheet);hold();return}
+  const r=fromEl.getBoundingClientRect();
+  Object.assign(sheet.style,{left:r.left+'px',top:r.top+'px',width:r.width+'px',height:r.height+'px',borderRadius:'4px'});
+  document.body.append(sheet);
+  const grow=sheet.animate([
+    {left:r.left+'px',top:r.top+'px',width:r.width+'px',height:r.height+'px',borderRadius:'4px'},
+    {left:'0px',top:'0px',width:innerWidth+'px',height:innerHeight+'px',borderRadius:'0px'}
+  ],{duration:520,easing:'cubic-bezier(.2,.8,.2,1)',fill:'forwards'});
+  grow.finished.then(()=>{
+    Object.assign(sheet.style,{left:'0px',top:'0px',width:innerWidth+'px',height:innerHeight+'px',borderRadius:'0px'});
+    grow.cancel();
+    hold();
+  },()=>{});
+}
 function handleKey(key){
   if(state.view!=='game'||state.lockedDaily||state.finalised||state.inputLocked) return;
   if(state.battle){handleBattleKey(key);return}
   if(state.hangman){
     if(!/^[A-Z]$/.test(key)||state.hangman.status!=='playing'||state.hangman.guessed.has(key)) return;
-    state.hangman.guess(key);playSound();renderHangman();renderKeyboard();
-    if(state.hangman.status!=='playing') finishHangman();
+    hangmanGuess(key);
     return;
   }
   const game=currentGame();if(!game||game.status!=='playing') return;
@@ -1052,15 +1127,18 @@ function closeModals(restoreFocus=true){
   if(hadOpen) syncBattleClock();
   if(restoreFocus && lastModalTrigger?.isConnected && !lastModalTrigger.closest('.modal')) lastModalTrigger.focus();
 }
+// Public testers may still hold a pre-Celosia theme id in storage.
+const THEME_LEGACY={paper:'panther',gold:'panther',oxbridge:'blue',forest:'teal'};
 function setTheme(theme){
-  if(!['paper','ink','oxbridge','forest','slate'].includes(theme)) theme='paper';
+  theme=THEME_LEGACY[theme]||theme;
+  if(!['panther','ink','blue','teal','slate'].includes(theme)) theme='teal';
   state.theme=theme;document.documentElement.dataset.theme=theme;
   storage.set('lexicon.v1.theme',theme);
   $$('[data-theme-btn]').forEach(button=>button.classList.toggle('active',button.dataset.themeBtn===theme));
   const iconSwap=$('#themeIconSwap');
-  if(iconSwap) iconSwap.dataset.state=theme==='ink'?'b':'a';
+  if(iconSwap) iconSwap.dataset.state=theme==='ink'||theme==='panther'?'b':'a';
   document.querySelector('meta[name="theme-color"]')?.setAttribute('content',
-    theme==='ink'?'#121312':theme==='oxbridge'?'#f1f2f4':theme==='forest'?'#f4f6f2':theme==='slate'?'#f8f8f9':'#f7f6f3');
+    theme==='ink'?'#15162c':theme==='panther'?'#16101f':theme==='blue'?'#f1f5fb':theme==='teal'?'#eef7f5':theme==='slate'?'#f5f5f7':'#f7f6f3');
 }
 function setZen(on){
   if(state.zen===on) return;
@@ -1088,7 +1166,7 @@ function useHint(){
     const next=[...state.hangman.answer].find(letter=>!state.hangman.guessed.has(letter));
     if(!next) return;
     state.hangman.guess(next);renderHangman();renderKeyboard();
-    showToast(`Revealed letter: ${next}`);
+    showToast(`Revealed letter: ${next}`);announce(`Revealed letter ${next}.`);
     if(state.hangman.status==='won') finishHangman();
     return;
   }
@@ -1138,15 +1216,15 @@ function bindIsland(){
   $('#modeRail').addEventListener('click',event=>{
     const button=event.target.closest('[data-mode]');
     if(!button) return;
-    button.dataset.mode==='hero'?showHero():showGame(button.dataset.mode);
+    button.dataset.mode==='hero'?swipeHome(()=>showHero()):peelTo(()=>showGame(button.dataset.mode),null,titles[button.dataset.mode]);
   });
   $('#educationNavBtn').addEventListener('click',()=>showEducation());
-  $('#homeBtn').addEventListener('click',()=>showHero());
+  $('#homeBtn').addEventListener('click',()=>swipeHome(()=>showHero()));
 }
 function bindControls(){
   bindIsland();prepareTimeMachine();
   $$('.archive-card,[data-cta="daily"]').forEach(card=>{
-    card.addEventListener('click',()=>showGame(card.dataset.mode));
+    card.addEventListener('click',()=>peelTo(()=>showGame(card.dataset.mode),card,titles[card.dataset.mode]));
     if(card.classList.contains('archive-card')) card.addEventListener('mousemove',event=>{
       const rect=card.getBoundingClientRect();card.style.setProperty('--x',`${event.clientX-rect.left}px`);card.style.setProperty('--y',`${event.clientY-rect.top}px`);
     });
@@ -1154,7 +1232,7 @@ function bindControls(){
   $('#exploreBtn').addEventListener('click',()=>$('.archive-grid-section').scrollIntoView({behavior:prefersReduced()?'auto':'smooth'}));
   $('#educationCta').addEventListener('click',()=>showEducation());
   $('#educationPromoBtn').addEventListener('click',()=>showEducation());
-  $('#eduBackBtn').addEventListener('click',()=>showHero());
+  $('#eduBackBtn').addEventListener('click',()=>swipeHome(()=>showHero()));
   $('#eduSearch').addEventListener('input',event=>{
     state.eduQuery=event.target.value;
     const clear=$('#eduSearchClear');if(clear) clear.hidden=!event.target.value;
@@ -1174,11 +1252,11 @@ function bindControls(){
     movePill($('#eduFilters'),motionReady);
     $('#eduFeature').scrollIntoView({behavior:prefersReduced()?'auto':'smooth',block:'start'});
   });
-  $('#mobileBackBtn').addEventListener('click',()=>showHero());
+  $('#mobileBackBtn').addEventListener('click',()=>swipeHome(()=>showHero()));
   $('#settingsBtn').addEventListener('click',()=>openModal('settingsModal'));
   $('#helpBtn').addEventListener('click',()=>openModal('helpModal'));
   $('#statsBtn').addEventListener('click',()=>{renderPersonalRecord();openModal('statsModal')});
-  $('#themeQuickBtn').addEventListener('click',()=>setTheme(state.theme==='ink'?'paper':'ink'));
+  $('#themeQuickBtn').addEventListener('click',()=>setTheme(state.theme==='ink'||state.theme==='panther'?'teal':'ink'));
   $$('[data-close]').forEach(button=>button.addEventListener('click',()=>closeModals()));
   $$('.modal').forEach(modal=>modal.addEventListener('click',event=>{if(event.target===modal) closeModals()}));
   $$('[data-theme-btn]').forEach(button=>button.addEventListener('click',()=>setTheme(button.dataset.themeBtn)));
@@ -1255,3 +1333,10 @@ window.addEventListener('resize',()=>{
   clearTimeout(pillResizeT);
   pillResizeT=setTimeout(snapAllPills,160);
 });
+
+/* Offline support: register the service worker relative to this page. */
+(()=>{
+  if(!('serviceWorker' in navigator)) return;
+  const register=()=>navigator.serviceWorker.register('./sw.js').catch(()=>{});
+  if(document.readyState==='complete') register(); else window.addEventListener('load',register);
+})();

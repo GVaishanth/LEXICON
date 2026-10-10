@@ -6,7 +6,7 @@ An editorial collection of nine word games and a **separate Education reading ro
 
 The interface is authored against two in-repo design documents:
 
-- **`DESIGN.md`** — the *Archival Lexicography & Tactile Folio* system: colour tokens with contrast ratios, the four-family type system (Albert Sans, Playfair Display, Source Serif 4, JetBrains Mono), concentric radii, and shadow-versus-border elevation rules.
+- **`DESIGN.md`** — the *Archival Lexicography & Tactile Folio* system: colour tokens with contrast ratios, the type system (Albert Sans, Playfair Display, Source Serif 4, JetBrains Mono, plus Comic Sans on Home and Times New Roman in Education) and the iOS 27 Celosia theme palette, concentric radii, and shadow-versus-border elevation rules.
 - **`PRODUCT.md`** — audience, purpose, and the four product principles the design must honour.
 
 Motion follows four public craft systems, implemented by hand with no build step:
