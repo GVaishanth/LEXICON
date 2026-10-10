@@ -13,7 +13,7 @@ const storage={
 const readJSON=(key,fallback)=>{try{return JSON.parse(storage.get(key))??fallback}catch{return fallback}};
 const savedStats=readJSON('lexicon.v1.stats',{});
 const state={
-  view:'hero',mode:'hero',theme:storage.get('lexicon.v1.theme')||'teal',
+  view:'hero',mode:'hero',theme:storage.get('lexicon.v1.theme')||autoTheme(),
   hard:storage.get('lexicon.v1.hard')==='true',zen:storage.get('lexicon.v1.zen')==='true',
   sound:storage.get('lexicon.v1.sound')==='true',
   stats:{played:Number(savedStats.played)||0,won:Number(savedStats.won)||0,byMode:savedStats.byMode||{}},
@@ -276,8 +276,43 @@ function renderMatchRecord(){
 // View selection. Education is deliberately not in the play-mode group.
 const titles={daily:'Daily Dispatch','4':'Four-Letter Archive','5':'Five-Letter Classic','6':'Six-Letter Archive',movie:'Movie Finds',hangman:'Hangman',marathon:'Marathon',anagram:'Anagram',battle:'Battle'};
 const subtitles={daily:'One word a day for every reader','4':'Four letters, six attempts','5':'The classic five-letter challenge','6':'Six letters, six attempts',movie:'A cinematic clue from the archive',hangman:'Find the word from its clue before the final error',marathon:'Three words · four, five, six letters',anagram:'Make a word from the shuffled letters',battle:'Two private boards · one shared word'};
-function canLeaveBattle(){
-  return !(state.view==='game' && state.mode==='battle' && state.battle?.status==='playing') || window.confirm('Leave this match? Its progress will be lost.');
+function battleInProgress(){
+  return state.view==='game' && state.mode==='battle' && state.battle?.status==='playing';
+}
+/* Custom duel popup. Calls proceed() only if the player forfeits. */
+function confirmForfeit(proceed){
+  if(document.querySelector('.duel-overlay')) return;
+  const overlay=make('div','duel-overlay');
+  const card=make('div','duel-card');
+  card.setAttribute('role','alertdialog');card.setAttribute('aria-modal','true');
+  card.setAttribute('aria-labelledby','duelTitle');card.setAttribute('aria-describedby','duelBody');
+  card.innerHTML='<div class="duel-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 4l11 11M4 4h4M4 4v4M20 4L9 15M20 4h-4M20 4v4M9 15l-4 4M15 15l4 4"/></svg></div>';
+  const kicker=make('span','duel-kicker','Private duel · Battle');
+  const title=make('h2','duel-title','Forfeit this duel?');title.id='duelTitle';
+  const body=make('p','duel-body','Both private boards will be sealed unopened. Your progress is lost and the match is not recorded.');body.id='duelBody';
+  const stamp=make('div','duel-stamp','Forfeit');stamp.setAttribute('aria-hidden','true');
+  const actions=make('div','duel-actions');
+  const keep=make('button','duel-keep','Fight on');keep.type='button';
+  const quit=make('button','duel-quit','Forfeit match');quit.type='button';
+  actions.append(keep,quit);
+  card.append(kicker,title,body,stamp,actions);
+  overlay.append(card);
+  const close=(leave)=>{
+    window.removeEventListener('keydown',onKey,true);
+    overlay.classList.add('closing');
+    setTimeout(()=>overlay.remove(),220);
+    if(leave) proceed();
+  };
+  const onKey=(event)=>{
+    if(event.key==='Escape'){event.preventDefault();event.stopImmediatePropagation();close(false)}
+    else if(event.key==='Tab'){event.preventDefault();(document.activeElement===keep?quit:keep).focus()}
+  };
+  keep.addEventListener('click',()=>close(false));
+  quit.addEventListener('click',()=>close(true));
+  overlay.addEventListener('click',(event)=>{if(event.target===overlay) close(false)});
+  window.addEventListener('keydown',onKey,true);
+  document.body.append(overlay);
+  keep.focus();
 }
 function resetSession(){
   state.sessionId++;state.definitionSerial++;
@@ -315,14 +350,14 @@ function switchView(view){
   window.scrollTo({top:0,behavior:prefersReduced()?'auto':'smooth'});
 }
 function showHero(force=false){
-  if(!force && !canLeaveBattle()) return;
+  if(!force && battleInProgress()) return confirmForfeit(()=>showHero(true));
   resetSession();state.mode='hero';switchView('hero');
   renderHeroPreview();refreshTimeMachineRange();renderTimeMachineCalendar();
 }
 function showGame(mode,options={}){
   if(mode==='hero'){showHero();return}
   if(!titles[mode]) return;
-  if(!options.force && !canLeaveBattle()) return;
+  if(!options.force && battleInProgress()) return confirmForfeit(()=>showGame(mode,{...options,force:true}));
   resetSession();state.mode=mode;
   state.timeMachine=!!options.timeMachine;
   state.puzzleDay=options.puzzleDay||null;
@@ -334,8 +369,57 @@ function showGame(mode,options={}){
   $('#gameSubtitle').textContent=subtitles[mode];
   initGame(mode);
 }
+/* Surprise me: a slot reel spins through words and lands on one. */
+function spinEducationSlot(){
+  const btn=$('#eduSurpriseBtn');if(btn.disabled) return;
+  state.eduCategory='All';state.eduQuery='';$('#eduSearch').value='';
+  const clear=$('#eduSearchClear');if(clear) clear.hidden=true;
+  let target=LORE_ENTRIES[Math.floor(Math.random()*LORE_ENTRIES.length)];
+  if(target===state.eduSelected&&LORE_ENTRIES.length>1) target=LORE_ENTRIES[(LORE_ENTRIES.indexOf(target)+1)%LORE_ENTRIES.length];
+  const host=$('#eduFeature');
+  host.hidden=false;host.classList.remove('trait-golden','trait-silver');
+  const reel=make('div','slot-window');reel.setAttribute('aria-hidden','true');
+  const strip=make('div','slot-strip');
+  const N=26;
+  for(let i=0;i<N-1;i++) strip.append(make('div','slot-item',LORE_ENTRIES[Math.floor(Math.random()*LORE_ENTRIES.length)].word));
+  strip.append(make('div','slot-item',target.word));
+  reel.append(strip);
+  host.replaceChildren(reel);
+  host.scrollIntoView({behavior:prefersReduced()?'auto':'smooth',block:'start'});
+  btn.disabled=true;
+  const land=()=>{
+    state.eduSelected=target;updateEducation();
+    movePill($('#eduFilters'),motionReady);
+    btn.disabled=false;
+  };
+  if(prefersReduced()||!strip.animate){land();return}
+  strip.animate([
+    {transform:'translateY(0)',filter:'blur(1.2px)'},
+    {transform:`translateY(${-(N-1)*88}px)`,filter:'blur(0px)'}
+  ],{duration:2600,easing:'cubic-bezier(.12,.75,.2,1)',fill:'forwards'}).finished.then(()=>setTimeout(land,380),()=>land());
+}
+/* Education entry: the words "The Reading Room" are typed onto a paper sheet first. */
+function openEducation(){
+  if(battleInProgress()||matchMedia('(prefers-reduced-motion: reduce)').matches||!document.body.animate){showEducation();return}
+  const sheet=make('div','type-sheet');sheet.setAttribute('aria-hidden','true');
+  const line=make('div','type-line');
+  const out=make('span','type-text');
+  line.append(out,make('span','type-caret',''));
+  sheet.append(line);
+  document.body.append(sheet);
+  const text='The Reading Room';
+  let i=0;
+  const type=()=>{
+    if(i<=text.length){out.textContent=text.slice(0,i);i++;setTimeout(type,68+Math.random()*40);return}
+    setTimeout(()=>{
+      showEducation();
+      sheet.animate([{opacity:1},{opacity:0}],{duration:380,easing:'ease-out',fill:'forwards'}).finished.then(()=>sheet.remove(),()=>sheet.remove());
+    },520);
+  };
+  type();
+}
 function showEducation(word=null){
-  if(!canLeaveBattle()) return;
+  if(battleInProgress()) return confirmForfeit(()=>showEducation(word));
   resetSession();state.mode='education';switchView('education');
   $('#eduSearch').value='';state.eduQuery='';
   const clear=$('#eduSearchClear');if(clear) clear.hidden=true;
@@ -489,7 +573,32 @@ function renderSelectedLore(){
   source.href=item.source;source.target='_blank';source.rel='noopener noreferrer';
   copy.append(make('p','edu-root',item.root),make('p','edu-story',item.story),
     make('p','edu-detail',item.detail),source);
+  const trait=traitOf(item.word);
+  if(trait!=='common') aside.querySelector('small')?.append(make('span','trait-badge',trait==='golden'?'Golden trait':'Silver trait'));
+  host.classList.remove('trait-golden','trait-silver');
+  host.querySelector(':scope > .trait-fx')?.remove();
   host.append(aside,copy);
+  if(trait!=='common'){host.classList.add(`trait-${trait}`);host.prepend(makeTraitFx(trait))}
+}
+/* Each word has a fixed trait: about 1 in 12 golden, about 1 in 6 silver, the rest common. */
+function traitOf(word){
+  let h=0;for(const ch of word) h=(h*31+ch.charCodeAt(0))>>>0;
+  const m=h%12;
+  return m===0?'golden':(m===5||m===9)?'silver':'common';
+}
+function makeTraitFx(trait){
+  const fx=make('div','trait-fx');fx.setAttribute('aria-hidden','true');
+  const count=trait==='golden'?12:16;
+  for(let i=0;i<count;i++){
+    const el=make('span',trait==='golden'?'spark':'twinkle');
+    el.style.left=`${(Math.random()*96).toFixed(1)}%`;
+    el.style.top=`${(Math.random()*94).toFixed(1)}%`;
+    el.style.animationDelay=`${(Math.random()*2.6).toFixed(2)}s`;
+    el.style.animationDuration=`${(1.6+Math.random()*1.6).toFixed(2)}s`;
+    el.style.setProperty('--s',(0.6+Math.random()*0.7).toFixed(2));
+    fx.append(el);
+  }
+  return fx;
 }
 
 const definitionCache=new Map();
@@ -660,7 +769,9 @@ function swipeHome(run){
   if(matchMedia('(prefers-reduced-motion: reduce)').matches||!document.body.animate){run();return}
   const sheet=make('div','swipe-sheet');sheet.setAttribute('aria-hidden','true');
   const clock=make('div','swipe-time',new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}));
-  sheet.append(clock,make('div','swipe-name','LEXICON'));
+  const now=new Date();
+  const date=`${now.getDate()} ${now.toLocaleString('en-GB',{month:'short'}).toUpperCase()} ${now.getFullYear()}`;
+  sheet.append(clock,make('div','swipe-name','LEXICON'),make('div','swipe-date',date));
   document.body.append(sheet);
   sheet.animate([{transform:'translateY(100%)'},{transform:'translateY(0)'}],{duration:460,easing:'cubic-bezier(.2,.8,.2,1)',fill:'forwards'}).finished.then(()=>{
     run();
@@ -804,17 +915,55 @@ function announce(text){
 function hangmanGuess(letter){
   const h=state.hangman;if(!h) return;
   const wrong=!h.answer.includes(letter);
+  const keyEl=keyboardEl.querySelector(`[data-key="${letter}"]`);
+  const keyRect=keyEl?keyEl.getBoundingClientRect():null;
+  const before=h.getRevealed();
   h.guess(letter);playSound();renderHangman();
   if(h.status==='won') announce(`You won. The word is ${h.answer}.`);
   else if(h.status==='lost') announce(`You lost. The word was ${h.answer}.`);
   else announce(wrong?`${letter} is not in the word. ${h.maxWrong-h.wrong} errors left.`:`${letter} is in the word. ${h.getRevealed().join(' ')}.`);
   const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const key=wrong&&!reduce?keyboardEl.querySelector(`[data-key="${letter}"]`):null;
+  if(wrong) showHangmanWarning(`${letter} is not in the word · ${h.maxWrong-h.wrong} errors left`,reduce);
+  const key=wrong&&!reduce?keyEl:null;
   if(key){
     key.classList.add('cut');key.disabled=true;
     setTimeout(()=>{if(state.hangman===h) renderKeyboard()},760);
-  } else renderKeyboard();
+  } else {
+    renderKeyboard();
+    if(!wrong&&keyRect&&!reduce) flyToSlots(letter,keyRect,before,h);
+  }
   if(h.status!=='playing') finishHangman();
+}
+/* Red warning popup and gallows shake for a wrong letter. */
+function showHangmanWarning(text,reduce){
+  const wrap=document.querySelector('#board .hangman-wrap');if(!wrap) return;
+  const warn=make('div','hm-warning',text);warn.setAttribute('role','alert');
+  wrap.append(warn);
+  warn.addEventListener('animationend',()=>warn.remove());
+  setTimeout(()=>warn.remove(),2200);
+  const gallows=wrap.querySelector('.gallows');
+  if(gallows&&!reduce&&gallows.animate) gallows.animate([{translate:'0 0'},{translate:'-6px 0'},{translate:'6px 0'},{translate:'-4px 0'},{translate:'0 0'}],{duration:380});
+}
+/* A correct letter flies from its key into each matching blank. */
+function flyToSlots(letter,from,before,h){
+  const slots=[...document.querySelectorAll('#board .hm-letter')];
+  h.getRevealed().forEach((ch,i)=>{
+    if(before[i]!=='_'||ch!==letter) return;
+    const to=slots[i];if(!to) return;
+    const r=to.getBoundingClientRect();
+    const fly=make('div','hm-fly',letter);
+    Object.assign(fly.style,{left:from.left+'px',top:from.top+'px',width:from.width+'px',height:from.height+'px'});
+    document.body.append(fly);
+    to.style.opacity='0';
+    const dx=(r.left+r.width/2)-(from.left+from.width/2);
+    const dy=(r.top+r.height/2)-(from.top+from.height/2);
+    const sc=r.width/from.width;
+    fly.animate([{transform:'translate(0,0) scale(1)'},{transform:`translate(${dx}px,${dy}px) scale(${sc})`}],{duration:560,easing:'cubic-bezier(.3,.7,.2,1)',fill:'forwards'}).finished.then(()=>{
+      fly.remove();
+      to.style.opacity='';
+      to.animate([{opacity:0},{opacity:1}],{duration:180});
+    },()=>fly.remove());
+  });
 }
 /* Page change. From a game card, the card copy grows to full screen, the game
    opens underneath, then the note peels away from the bottom-right corner. */
@@ -1129,9 +1278,11 @@ function closeModals(restoreFocus=true){
 }
 // Public testers may still hold a pre-Celosia theme id in storage.
 const THEME_LEGACY={paper:'panther',gold:'panther',oxbridge:'blue',forest:'teal'};
+/* Day is Teal and night is Ink, from 06:00 to 17:59 local time. */
+function autoTheme(){const h=new Date().getHours();return h>=6&&h<18?'teal':'ink'}
 function setTheme(theme){
   theme=THEME_LEGACY[theme]||theme;
-  if(!['panther','ink','blue','teal','slate'].includes(theme)) theme='teal';
+  if(!['panther','ink','blue','teal','slate'].includes(theme)) theme=autoTheme();
   state.theme=theme;document.documentElement.dataset.theme=theme;
   storage.set('lexicon.v1.theme',theme);
   $$('[data-theme-btn]').forEach(button=>button.classList.toggle('active',button.dataset.themeBtn===theme));
@@ -1140,6 +1291,10 @@ function setTheme(theme){
   document.querySelector('meta[name="theme-color"]')?.setAttribute('content',
     theme==='ink'?'#15162c':theme==='panther'?'#16101f':theme==='blue'?'#f1f5fb':theme==='teal'?'#eef7f5':theme==='slate'?'#f5f5f7':'#f7f6f3');
 }
+setInterval(()=>{
+  if(storage.get('lexicon.v1.theme')) return;
+  const next=autoTheme();if(next!==state.theme) setTheme(next);
+},60000);
 function setZen(on){
   if(state.zen===on) return;
   state.zen=on;document.documentElement.dataset.zen=on?'on':'off';
@@ -1218,7 +1373,7 @@ function bindIsland(){
     if(!button) return;
     button.dataset.mode==='hero'?swipeHome(()=>showHero()):peelTo(()=>showGame(button.dataset.mode),null,titles[button.dataset.mode]);
   });
-  $('#educationNavBtn').addEventListener('click',()=>showEducation());
+  $('#educationNavBtn').addEventListener('click',()=>openEducation());
   $('#homeBtn').addEventListener('click',()=>swipeHome(()=>showHero()));
 }
 function bindControls(){
@@ -1230,8 +1385,8 @@ function bindControls(){
     });
   });
   $('#exploreBtn').addEventListener('click',()=>$('.archive-grid-section').scrollIntoView({behavior:prefersReduced()?'auto':'smooth'}));
-  $('#educationCta').addEventListener('click',()=>showEducation());
-  $('#educationPromoBtn').addEventListener('click',()=>showEducation());
+  $('#educationCta').addEventListener('click',()=>openEducation());
+  $('#educationPromoBtn').addEventListener('click',()=>openEducation());
   $('#eduBackBtn').addEventListener('click',()=>swipeHome(()=>showHero()));
   $('#eduSearch').addEventListener('input',event=>{
     state.eduQuery=event.target.value;
@@ -1243,15 +1398,7 @@ function bindControls(){
     state.eduQuery='';$('#eduSearch').value='';eduClear.hidden=true;
     updateEducation();$('#eduSearch').focus();
   });
-  $('#eduSurpriseBtn').addEventListener('click',()=>{
-    state.eduCategory='All';state.eduQuery='';$('#eduSearch').value='';
-    const clear=$('#eduSearchClear');if(clear) clear.hidden=true;
-    let next=LORE_ENTRIES[Math.floor(Math.random()*LORE_ENTRIES.length)];
-    if(next===state.eduSelected) next=LORE_ENTRIES[(LORE_ENTRIES.indexOf(next)+1)%LORE_ENTRIES.length];
-    state.eduSelected=next;updateEducation();
-    movePill($('#eduFilters'),motionReady);
-    $('#eduFeature').scrollIntoView({behavior:prefersReduced()?'auto':'smooth',block:'start'});
-  });
+  $('#eduSurpriseBtn').addEventListener('click',()=>spinEducationSlot());
   $('#mobileBackBtn').addEventListener('click',()=>swipeHome(()=>showHero()));
   $('#settingsBtn').addEventListener('click',()=>openModal('settingsModal'));
   $('#helpBtn').addEventListener('click',()=>openModal('helpModal'));
@@ -1278,8 +1425,8 @@ function bindControls(){
   $('#battleStartBtn').addEventListener('click',startBattle);
   $('#battleReadyBtn').addEventListener('click',startBattleTurn);
   $('#battlePassBtn').addEventListener('click',passBattle);
-  $('#battleEndBtn').addEventListener('click',()=>{if(canLeaveBattle()) showGame('battle',{force:true})});
-  $('#battleLeaveBtn').addEventListener('click',()=>{if(canLeaveBattle()) showHero(true)});
+  $('#battleEndBtn').addEventListener('click',()=>{battleInProgress()?confirmForfeit(()=>showGame('battle',{force:true})):showGame('battle',{force:true})});
+  $('#battleLeaveBtn').addEventListener('click',()=>{battleInProgress()?confirmForfeit(()=>showHero(true)):showHero(true)});
   $('#resultEducationBtn').addEventListener('click',()=>showEducation(state.resultWord));
   $('#newGameBtn').addEventListener('click',()=>{
     const mode=state.mode,options={force:true,timeMachine:state.timeMachine,puzzleDay:state.puzzleDay};
@@ -1297,7 +1444,7 @@ function bindControls(){
       trapFocus(!curtain.hidden?curtain:$('.modal.open'),event);return;
     }
     if(event.key==='Escape'){
-      if(!curtain.hidden){if(canLeaveBattle()) showHero(true);return}
+      if(!curtain.hidden){battleInProgress()?confirmForfeit(()=>showHero(true)):showHero(true);return}
       if($$('.modal.open').length){closeModals();return}
       if(state.view==='game') showHero();
       else if(state.view==='education') showHero();
