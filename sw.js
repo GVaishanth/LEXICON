@@ -1,8 +1,7 @@
-/* Offline cache for LEXICON VI. Network first, cache as the fallback. */
-const CACHE = 'lexicon-vi-v2';
+const CACHE = 'lexicon-vi-v12';
 const SHELL = [
   './', './index.html', './css/style.css', './js/app.js', './js/game.js',
-  './js/words.js', './js/clues.js', './js/education.js', './js/leaderboard.js',
+  './js/words.js', './js/store.js', './js/dictionary.js', './js/adult-words.js', './js/age-gate.js', './data/dictionary.txt', './data/dictionary-version.txt', './js/clues.js', './js/education.js', './js/leaderboard.js',
   './js/vendor/gsap.min.js', './js/vendor/Flip.min.js', './manifest.webmanifest',
   './icons/icon-192.png', './icons/icon-512.png'
 ];

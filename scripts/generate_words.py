@@ -1,13 +1,17 @@
-import requests, re, json, os, pathlib
+import requests, re, json, os, pathlib, argparse
 
-# URLs
+# The two common-word headword lists are local files (one word per line), passed on the command line.
+# Remote sources:
 urls = {
-    "oxford5000": "https://raw.githubusercontent.com/ittuann/The-Oxford-5000-Word-Lists/main/The%20Oxford%205000.txt",
-    "oxford3000": "https://raw.githubusercontent.com/ittuann/The-Oxford-5000-Word-Lists/main/The%20Oxford%203000.txt",
     "wordle_allowed": "https://raw.githubusercontent.com/tabatkins/wordle-list/main/words",
     "sgb_5": "https://raw.githubusercontent.com/charlesreid1/five-letter-words/master/sgb-words.txt",
     "dwyl": "https://raw.githubusercontent.com/dwyl/english-words/master/words_alpha.txt",
 }
+
+parser = argparse.ArgumentParser(description="Rebuild js/words.js from local common-word lists and remote word lists.")
+parser.add_argument("--common-3000", required=True, help="path to the 3000 common-word headword list (one word per line)")
+parser.add_argument("--common-5000", required=True, help="path to the 5000 common-word headword list (one word per line)")
+args = parser.parse_args()
 
 def fetch(url):
     print(f"Fetching {url}")
@@ -15,7 +19,10 @@ def fetch(url):
     r.raise_for_status()
     return r.text
 
-data = {}
+data = {
+    "common5000": pathlib.Path(args.common_5000).read_text(encoding="utf-8"),
+    "common3000": pathlib.Path(args.common_3000).read_text(encoding="utf-8"),
+}
 for k,u in urls.items():
     try:
         data[k] = fetch(u)
@@ -35,12 +42,12 @@ def clean_words(text):
         words.append(w)
     return words
 
-oxford = clean_words(data["oxford5000"] + "\n" + data["oxford3000"])
+common = clean_words(data["common5000"] + "\n" + data["common3000"])
 wordle_allowed = clean_words(data["wordle_allowed"])
 sgb = clean_words(data["sgb_5"])
 dwyl = clean_words(data["dwyl"])
 
-print(f"Oxford: {len(oxford)} | wordle_allowed: {len(wordle_allowed)} | sgb: {len(sgb)} | dwyl: {len(dwyl)}")
+print(f"Common: {len(common)} | wordle_allowed: {len(wordle_allowed)} | sgb: {len(sgb)} | dwyl: {len(dwyl)}")
 
 # Filter by length
 def filter_len(words, l):
@@ -56,29 +63,29 @@ PROHIBITED = {
     'TWAT','TWATS','BOLLOCKS','BUGGER',
 }
 
-four_oxford = filter_len(oxford, 4)
+four_common = filter_len(common, 4)
 four_dwyl = filter_len(dwyl, 4)
-four_combined = sorted(set(four_oxford + four_dwyl))
+four_combined = sorted(set(four_common + four_dwyl))
 # Keep common-ish: limit to maybe 2500 most frequent? We'll take all but ensure at least 1500
 four_final = four_combined[:2500]  # dwyl already alphabetical, but okay
 four_final = [w for w in four_final if w.upper() not in PROHIBITED]
 
-five_oxford = filter_len(oxford, 5)
+five_common = filter_len(common, 5)
 five_sgb = filter_len(sgb,5)
-five_answers = sorted(set(five_oxford + five_sgb))
+five_answers = sorted(set(five_common + five_sgb))
 five_answers = [w for w in five_answers if w.upper() not in PROHIBITED]
 # Ensure at least 3000 answers
 # Add some from wordle_allowed that are common
 # We'll keep five_answers as ~3000-4000
-print(f"Five answers from oxford+sgb: {len(five_answers)}")
+print(f"Five answers from common+sgb: {len(five_answers)}")
 
 five_allowed = sorted(set(wordle_allowed + filter_len(dwyl,5) + five_answers))
 five_allowed = [w for w in five_allowed if w.upper() not in PROHIBITED]
 print(f"Five allowed: {len(five_allowed)}")
 
-six_oxford = filter_len(oxford, 6)
+six_common = filter_len(common, 6)
 six_dwyl = filter_len(dwyl, 6)
-six_combined = sorted(set(six_oxford + six_dwyl))
+six_combined = sorted(set(six_common + six_dwyl))
 print(f"Six combined: {len(six_combined)}")
 # Limit to maybe 5000
 six_final = six_combined[:5000]
@@ -232,9 +239,9 @@ out_path = pathlib.Path("../js/words.js")
 # For safety, write to both
 targets = [pathlib.Path(__file__).parent.parent / "js" / "words.js", pathlib.Path("/home/user/js/words.js")]
 
-js_content = f"""// LEXICON - Expanded Archive from Oxford 5000 + Wordle lists + dwyl
+js_content = f"""// LEXICON - Expanded Archive from common-word lists + Wordle lists + dwyl
 // Generated {len(four_final)} 4-letter, {len(five_answers)} 5-letter answers, {len(five_allowed)} allowed, {len(six_final)} 6-letter, {len(movie_final)} movies
-// Sources: Oxford 3000/5000, tabatkins wordle-list, sgb-words, dwyl english-words
+// Sources: common-word lists (3000 and 5000 headwords), tabatkins wordle-list, sgb-words, dwyl english-words
 
 export const FOUR_LETTER = {json.dumps([w.upper() for w in four_final])};
 

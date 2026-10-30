@@ -1,5 +1,3 @@
-// Personal, on-device records. Day = the reader's local calendar day of play.
-// No account, server, public ranking, or shared URL is involved.
 const WORD_GRID_MODES = new Set(['daily','4','5','6','movie','anagram']);
 
 export function localDayKey(value=new Date()){
@@ -60,7 +58,6 @@ export function getDayStreaks(history, today=new Date()){
   const todayNum=dayNumber(todayKey);
   const last=winning[winning.length-1];
   if(last!==todayNum && last!==todayNum-1) return {current:0,best};
-  // A completed but unsolved day breaks the streak even if yesterday was a win.
   if(last===todayNum-1 && days.some(d=>d.day===todayKey && d.solved===0)) return {current:0,best};
   let current=1;
   for(let i=winning.length-1;i>0 && winning[i]===winning[i-1]+1;i--) current++;

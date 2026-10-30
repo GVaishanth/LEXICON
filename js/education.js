@@ -1,5 +1,3 @@
-// An independent, offline reading room. Original short-form editorial notes
-// paraphrased from the linked etymology entries; not Oxford definitions.
 const entry=(word, category, origin, root, story, detail, slug=word.toLowerCase())=>({
   word, category, origin, root, story, detail,
   source:`https://en.wiktionary.org/wiki/${encodeURIComponent(slug)}`

@@ -1,18 +1,7 @@
-/* ============================================================
-   LEXICON VI — The Word Archive
-   Aesthetic: Archival Lexicography & Tactile Folio
-   Craft systems applied:
-   · Impeccable (DESIGN.md tokens, craft floor, slop refusals)
-   · transitions.dev (motion tokens + authored recipes p5–p27)
-   · GSAP skills (timelines, Flip, quickTo, matchMedia)
-   · make-interfaces-feel-better (concentric radii, tabular-nums,
-     text-wrap, press scale .96, interruptible transitions)
-   ============================================================ */
 @import url('https://fonts.googleapis.com/css2?family=Albert+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 :root{
-  /* ---- Motion tokens (transitions.dev) ---- */
-  --duration-stagger:40ms;
+    --duration-stagger:40ms;
   --duration-micro:80ms;
   --duration-quick:150ms;
   --duration-fast:250ms;
@@ -31,58 +20,34 @@
   --blur-small:2px;
   --blur-medium:3px;
 
-  /* ---- Palette (DESIGN.md) ---- */
-  --bg:#f7f6f3;                 /* Archival Vellum — warmth 4 (not cream) */
-  --surface:#ffffff;            /* Folio Plate */
-  --surface-2:#efede7;          /* Index Well */
-  --ink:#181715;                /* Primary Foreground */
-  --muted:#595650;              /* Secondary Copy — 7.1:1 on bg */
-  --border:#dfdbd2;             /* Structural Rule */
-  --border-2:#cbc5b9;           /* Strong Rule */
-  --accent:#8a5d14;             /* Celosia Gold —5.2:1 on bg */
-  --accent-2:#c9a24b;
+    --bg:#f7f6f3;                   --surface:#ffffff;              --surface-2:#efede7;            --ink:#181715;                  --muted:#595650;                --border:#dfdbd2;               --border-2:#cbc5b9;             --accent:#8a5d14;               --accent-2:#c9a24b;
   --success:#1fae5e;
   --present:#efc420;
   --error:#8a3b3b;
-  --tile-correct:#1fae5e;       /* Signal Viridian — bright, dark ink ≥6:1 */
-  --tile-present:#efc420;       /* Signal Amber   — bright, dark ink ≥10:1 */
-  --tile-absent:#d0d4da;        /* Signal Chalk   — whitened grey, dark ink ≥12:1 */
-  --tile-fg:#17191b;            /* Letter ink on every solved tile */
-  --toast-info:#1f5fc4;         /* Signal Cerulean — archive notice */
-  --toast-danger:#a83226;       /* Signal Garnet — prohibited word */
-  --movie-accent:#7c2d36;       /* Cinema Oxblood */
-  --marathon-accent:#8a420d;    /* Burnt Amber */
-  --anagram-accent:#165b3a;     /* Botanical Deep */
-  --battle-accent:#6e3428;      /* Terracotta Ink */
-
-  /* ---- Elevation: shadow carries depth, borders carry structure ---- */
-  --shadow-border:0 0 0 1px rgba(24,23,21,.06), 0 1px 2px -1px rgba(24,23,21,.05), 0 2px 4px -2px rgba(24,23,21,.04);
+  --tile-correct:#1fae5e;         --tile-present:#efc420;         --tile-absent:#d0d4da;          --tile-fg:#17191b;              --toast-info:#1f5fc4;           --toast-danger:#a83226;         --movie-accent:#7c2d36;         --marathon-accent:#8a420d;      --anagram-accent:#165b3a;       --battle-accent:#6e3428;      
+    --shadow-border:0 0 0 1px rgba(24,23,21,.06), 0 1px 2px -1px rgba(24,23,21,.05), 0 2px 4px -2px rgba(24,23,21,.04);
   --shadow-border-hover:0 0 0 1px rgba(24,23,21,.09), 0 1px 2px -1px rgba(24,23,21,.06), 0 4px 8px -3px rgba(24,23,21,.07);
   --shadow:0 1px 2px -1px rgba(24,23,21,.05), 0 4px 12px -3px rgba(24,23,21,.07);
   --shadow-lg:0 1px 2px -1px rgba(24,23,21,.06), 0 6px 14px -4px rgba(24,23,21,.08), 0 12px 14px -8px rgba(24,23,21,.05);
 
-  /* ---- Geometry ---- */
-  --radius:12px;
+    --radius:12px;
   --radius-lg:16px;
   --max:1160px;
 
-  /* ---- Type ---- */
-  --font-sans:'Albert Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --font-sans:'Albert Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-display:'Playfair Display', Georgia, 'Times New Roman', serif;
   --font-serif:'Source Serif 4', Georgia, serif;
   --font-mono:'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
   --font-funky:'Comic Sans MS','Comic Sans','Chalkboard SE','Chalkboard','Marker Felt','Segoe Print','Comic Neue',cursive;
   --font-formal:'Times New Roman',Times,Garamond,'Nimbus Roman',serif;
 
-  /* ---- iOS 27 "Celosia": light = sandy gold -> soft purple ---- */
-  --grad-hero:linear-gradient(115deg,#f3c276 0%,#e5a469 44%,#a98be0 100%);
+    --grad-hero:linear-gradient(115deg,#f3c276 0%,#e5a469 44%,#a98be0 100%);
   --grad-cta:linear-gradient(120deg,#f0bd72 0%,#de9f67 46%,#a98be0 100%);
   --grad-cta-fg:#1b1430;
   --wash-a:rgba(243,194,118,.34);
   --wash-b:rgba(169,139,224,.22);
 
-  /* ---- Island ---- */
-  --island-bg:#141412;
+    --island-bg:#141412;
   --island-fg:#f5f3ef;
   --island-muted:#a9a6a0;
   --island-border:rgba(255,255,255,.14);
@@ -90,8 +55,7 @@
 
 [data-theme="gold"]{}
 [data-theme="ink"]{
-  /* iOS 27 Dark Ink — deep indigo with silvery-blue edges */
-  --bg:#15162c;
+    --bg:#15162c;
   --surface:#1c1e38;
   --surface-2:#242645;
   --ink:#eeeef7;
@@ -118,8 +82,7 @@
   --wash-b:rgba(168,184,224,.16);
 }
 [data-theme="panther"]{
-  /* Panther: deep aubergine with violet edges (dark purple) */
-  --bg:#16101f;
+    --bg:#16101f;
   --surface:#1f1830;
   --surface-2:#2a2140;
   --ink:#f1ecfa;
@@ -146,8 +109,7 @@
   --wash-b:rgba(200,160,240,.16);
 }
 [data-theme="blue"]{
-  /* iOS 27 Blue template */
-  --bg:#f1f5fb;
+    --bg:#f1f5fb;
   --surface:#ffffff;
   --surface-2:#e7edf7;
   --ink:#152238;
@@ -163,8 +125,7 @@
   --wash-b:rgba(169,139,224,.16);
 }
 [data-theme="teal"]{
-  /* iOS 27 Teal template */
-  --bg:#eef7f5;
+    --bg:#eef7f5;
   --surface:#ffffff;
   --surface-2:#e1f0ec;
   --ink:#122925;
@@ -180,8 +141,7 @@
   --wash-b:rgba(140,200,240,.28);
 }
 [data-theme="slate"]{
-  /* iOS 27 Slate Gray template */
-  --bg:#f5f5f7;
+    --bg:#f5f5f7;
   --surface:#ffffff;
   --surface-2:#e9e9ec;
   --ink:#17181c;
@@ -197,7 +157,6 @@
   --wash-b:rgba(170,178,210,.34);
 }
 
-/* ============ Base ============ */
 *{box-sizing:border-box}
 html,body{height:100%}
 html{scroll-behavior:smooth}
@@ -224,19 +183,14 @@ p,li,figcaption,blockquote{text-wrap:pretty}
 .tnum,.stat-num,.meta-item strong,.battle-clock,.leaderboard-rank,
 .tm-date,.leaderboard-metric strong,.comp-winrate strong{font-variant-numeric:tabular-nums}
 
-/* Visible, themed focus everywhere */
 :focus-visible{outline:3px solid var(--accent);outline-offset:3px;border-radius:4px}
 
-/* Scrollbar follows the palette */
 *{scrollbar-width:thin;scrollbar-color:var(--border-2) transparent}
 *::-webkit-scrollbar{width:10px;height:10px}
 *::-webkit-scrollbar-track{background:transparent}
 *::-webkit-scrollbar-thumb{background:var(--border-2);border-radius:999px;border:3px solid var(--bg)}
 *::-webkit-scrollbar-thumb:hover{background:var(--muted)}
 
-/* ============ Motion recipe primitives ============ */
-
-/* Tactile press (make-interfaces-feel-better): scale exactly .96, interruptible */
 .btn,.card-cta,.theme-btn,.island-icon,.island-pill,.island-brand,.island-expand,
 .modal-close,.tm-day,.key,.edu-entry,.education-filters button,.leaderboard-tabs .t-tab,
 .island-education,.battle-curtain-exit{
@@ -255,7 +209,6 @@ p,li,figcaption,blockquote{text-wrap:pretty}
   scale:var(--scale-press);
 }
 
-/* p5 · Icon swap — both icons live in the DOM; one attribute drives the cross-fade */
 .t-icon-swap{position:relative;display:inline-grid;place-items:center;width:1em;height:1em}
 .t-icon-swap .t-icon{
   grid-area:1/1;display:grid;place-items:center;
@@ -274,7 +227,6 @@ p,li,figcaption,blockquote{text-wrap:pretty}
   opacity:0;filter:blur(var(--blur-small));transform:scale(.25);
 }
 
-/* p6 · Text states swap — dynamic status copy swaps through a soft blur */
 .t-text-swap{
   display:inline-block;
   opacity:1;transform:translateY(0);filter:blur(0);
@@ -287,7 +239,6 @@ p,li,figcaption,blockquote{text-wrap:pretty}
 .t-text-swap.is-exit{opacity:0;transform:translateY(-6px);filter:blur(var(--blur-small))}
 .t-text-swap.is-enter-start{opacity:0;transform:translateY(6px);filter:blur(var(--blur-small));transition:none}
 
-/* p16 · Sliding pill tabs — JS writes measured translateX/width, CSS tweens */
 .t-tabs{position:relative;display:inline-flex;align-items:center;gap:3px;padding:3px;border-radius:999px;background:var(--surface-2);border:1px solid var(--border)}
 .t-tabs .t-tab{
   position:relative;z-index:1;border:0;background:transparent;cursor:pointer;
@@ -305,7 +256,6 @@ p,li,figcaption,blockquote{text-wrap:pretty}
   transition:transform var(--duration-fast) var(--ease-smooth-out);
 }
 
-/* p24 · Learn-more chevron — two arms open about the apex on hover */
 .t-learn{display:inline-flex;align-items:center;gap:8px}
 .t-learn-chevron{display:inline-flex;transform:translateX(0);transition:transform var(--duration-quick) var(--ease-out)}
 .t-learn .t-learn-arm{transform-box:view-box;transform-origin:10px 8px;vector-effect:non-scaling-stroke;transition:transform var(--duration-quick) var(--ease-out)}
@@ -313,10 +263,8 @@ p,li,figcaption,blockquote{text-wrap:pretty}
 .t-learn:hover .t-learn-arm-top{transform:rotate(26deg)}
 .t-learn:hover .t-learn-arm-bot{transform:rotate(-26deg)}
 .t-learn:hover .t-learn-arm{transition-duration:var(--duration-fast)}
-.btn-with-icon{padding-left:18px;padding-right:15px}  /* icon side = text side − 3px */
-.btn.large.btn-with-icon{padding-left:22px;padding-right:19px}
+.btn-with-icon{padding-left:18px;padding-right:15px}  .btn.large.btn-with-icon{padding-left:22px;padding-right:19px}
 
-/* p19 · 3D tilt specimen plate */
 .t-tilt{perspective:900px;touch-action:pan-y}
 .t-tilt-card{
   position:relative;
@@ -336,7 +284,6 @@ p,li,figcaption,blockquote{text-wrap:pretty}
 }
 .t-tilt.is-hover .t-tilt-glare{opacity:.9}
 
-/* ============ Dynamic Island ============ */
 .island-wrap{
   position:fixed;top:0;left:50%;
   transform:translateX(-50%);
@@ -415,8 +362,6 @@ p,li,figcaption,blockquote{text-wrap:pretty}
   }
 }
 
-/* p21 · Grid-rows accordion for the drawer. visibility gates focus and
-   hit-testing while collapsed; it flips back after the collapse finishes. */
 .island-bottom{
   display:grid;grid-template-rows:0fr;
   opacity:0;visibility:hidden;
@@ -474,7 +419,6 @@ p,li,figcaption,blockquote{text-wrap:pretty}
 }
 .island-education:hover,.island-education.active{background:var(--island-fg);color:var(--island-bg);border-color:var(--island-fg)}
 
-/* ============ Views ============ */
 .view{
   display:none;opacity:0;transform:translateY(8px);
   transition:opacity var(--duration-fast) var(--ease-out),transform var(--duration-fast) var(--ease-out);
@@ -483,7 +427,6 @@ p,li,figcaption,blockquote{text-wrap:pretty}
 .view.active{display:block;opacity:1;transform:none;animation:view-enter var(--duration-medium) var(--ease-smooth-out)}
 @keyframes view-enter{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 
-/* ============ Shared editorial parts ============ */
 .folio-ledger{
   display:flex;align-items:center;gap:10px;flex-wrap:wrap;
   font-size:12px;color:var(--muted);
@@ -526,12 +469,10 @@ p,li,figcaption,blockquote{text-wrap:pretty}
 .muted{color:var(--muted)}
 .divider{height:1px;background:var(--border)}
 
-/* ============ Hero ============ */
 .hero-view{max-width:var(--max);margin:0 auto;padding-left:20px;padding-right:20px}
 .hero{
   padding:24px 0 48px;
 }
-/* The colour wash is a fixed full-page layer, so it has no box edge. */
 body::before{
   content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
   background:
@@ -574,17 +515,14 @@ body::before{
 .meta-item span{font-size:12px;letter-spacing:.03em;color:var(--muted);font-weight:500}
 .meta-sep{width:1px;height:32px;background:var(--border)}
 
-.hero-right{position:sticky;top:100px;padding-bottom:118px}  /* colophon room below the cards */
-.hero-preview{
+.hero-right{position:sticky;top:100px;padding-bottom:118px}  .hero-preview{
   border-radius:var(--radius-lg);
   box-shadow:var(--shadow-border);
   overflow:hidden;
 }
 .preview-inner{
   position:relative;z-index:1;
-  background:var(--surface);   /* the surface lives on the content wrapper so its
-                                  padded header/footer insulate the text edges */
-}
+  background:var(--surface);   }
 .preview-header{
   display:flex;justify-content:space-between;align-items:center;gap:10px;
   padding:13px 16px;border-bottom:1px solid var(--border);
@@ -633,7 +571,6 @@ body::before{
   color:var(--border-2);
 }
 
-/* Archive grid */
 .archive-grid-section{padding:20px 0 48px}
 .section-head{margin-bottom:22px}
 .section-head h2{font-family:var(--font-display);font-size:30px;margin:0 0 8px;letter-spacing:-.02em}
@@ -707,7 +644,6 @@ body::before{
 .demo-row{display:flex;gap:8px;justify-content:center;margin-bottom:12px}
 .demo-caption{font-size:12.5px;color:var(--muted);text-align:center;font-family:var(--font-serif)}
 
-/* Reading promo — explicit padding values resolve statically for source scans */
 .reading-promo{
   display:grid;grid-template-columns:1.25fr .85fr;gap:40px;align-items:center;
   border:1px solid var(--border);border-radius:20px;
@@ -719,8 +655,7 @@ body::before{
 .reading-promo-example{
   border-radius:15px;background:var(--surface);
   padding:26px;box-shadow:var(--shadow-border);
-  rotate:1.2deg;               /* independent of the tilt transform */
-}
+  rotate:1.2deg;               }
 .specimen-meta{
   display:block;font-family:var(--font-mono);font-size:11.5px;
   letter-spacing:.04em;color:var(--muted);
@@ -732,7 +667,6 @@ body::before{
 .specimen-origin{font-size:13px;color:var(--accent);font-weight:500}
 .reading-promo-example p{font-size:14.5px;margin:16px 0 0;color:var(--ink);font-style:italic}
 
-/* Ideas / features */
 .ideas-section{padding:24px 0 48px;border-top:1px solid var(--border);margin-top:12px}
 .ideas-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}
 .idea-card{
@@ -755,7 +689,6 @@ body::before{
 .idea-card h3{margin:10px 0 5px;font-size:15px;font-weight:700}
 .idea-card p{margin:0;font-size:13px;color:var(--muted);line-height:1.55;font-family:var(--font-serif)}
 
-/* ============ Game view ============ */
 .game-view .page{
   max-width:var(--max);margin:0 auto;
   padding:28px 20px 40px;
@@ -780,7 +713,6 @@ body::before{
 .badge.battle{background:var(--battle-accent);color:#fff;border-color:var(--battle-accent)}
 .badge.zen{background:color-mix(in srgb,var(--accent) 14%,var(--surface-2));color:var(--accent);border-color:color-mix(in srgb,var(--accent) 30%,var(--border))}
 
-/* Board */
 .board{
   --cols:5;--rows:6;
   display:grid;gap:8px;
@@ -810,7 +742,6 @@ body::before{
 @keyframes tile-pop{0%{transform:scale(1)}50%{transform:scale(1.05)}100%{transform:scale(1)}}
 @keyframes tile-flip{0%{transform:rotateX(0)}50%{transform:rotateX(90deg)}100%{transform:rotateX(0)}}
 
-/* p12 · Error state shake — multi-segment, per-stop easing */
 .row.shake{animation:input-shake 280ms linear}
 @keyframes input-shake{
   0%{transform:translateX(0);animation-timing-function:var(--ease-smooth-out)}
@@ -821,7 +752,6 @@ body::before{
 }
 .board.disabled{opacity:.6;pointer-events:none}
 
-/* Hangman */
 .hangman-wrap{display:flex;flex-direction:column;gap:22px;align-items:center;width:100%}
 .gallows{
   background:var(--surface);border:1px solid var(--border);
@@ -854,7 +784,6 @@ body::before{
 }
 .hm-letter.revealed{color:var(--ink);border-color:var(--ink)}
 
-/* Keyboard */
 .keyboard{margin-top:22px;width:min(100%,520px);display:flex;flex-direction:column;gap:8px}
 .kb-row{display:flex;gap:6px;justify-content:center}
 .key{
@@ -876,7 +805,6 @@ body::before{
 .game-actions{display:flex;gap:8px;margin-top:14px;justify-content:center}
 .mobile-back{display:none;margin-top:18px}
 
-/* Compendium */
 .compendium{
   position:sticky;top:88px;align-self:start;
   background:var(--surface);
@@ -900,7 +828,6 @@ body::before{
 .comp-winrate{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin:12px 0 16px}
 .comp-winrate strong{color:var(--ink)}
 
-/* Toast — p22 asymmetric open/close */
 .toast{
   position:fixed;left:50%;bottom:28px;
   transform:translateX(-50%) translateY(14px) scale(.96);
@@ -926,7 +853,6 @@ body::before{
 .toast.tone-info{background:var(--toast-info);color:#fff;box-shadow:0 8px 18px rgba(31,95,196,.32)}
 .toast.tone-danger{background:var(--toast-danger);color:#fff;box-shadow:0 8px 18px rgba(168,50,38,.32)}
 
-/* Modals — p7 open 250ms / close 150ms, scale .96 ↔ 1 */
 .modal{
   position:fixed;inset:0;z-index:200;
   background:rgba(20,19,17,.4);backdrop-filter:blur(6px);
@@ -982,7 +908,6 @@ body::before{
 .modal-archive-note{font-size:12.5px;margin-top:14px}
 .result-definition-box{margin-bottom:12px;padding:13px;border:1px solid var(--border);border-radius:10px;background:var(--surface-2)}
 
-/* Footer */
 .footer{
   max-width:var(--max);margin:0 auto;padding:24px 20px 40px;
   border-top:1px solid var(--border);
@@ -990,7 +915,6 @@ body::before{
   font-size:12.5px;color:var(--muted);letter-spacing:.01em;
 }
 
-/* ============ Time machine ============ */
 .time-machine{
   margin-top:18px;
   background:var(--surface);
@@ -1021,7 +945,6 @@ body::before{
 .tm-day.today{border-color:var(--ink);font-weight:700}
 .tm-day.future{opacity:.35;pointer-events:none}
 
-/* ============ Definition ============ */
 .definition-box{
   background:var(--surface-2);border:1px solid var(--border);border-radius:12px;
   padding:12px;font-family:var(--font-serif);
@@ -1033,7 +956,6 @@ body::before{
 .def-body .pos{font-style:italic;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04em}
 .def-body .example{color:var(--muted);font-style:italic;margin-top:4px;font-size:12.5px}
 
-/* ============ Heatmap & record ============ */
 .heatmap{display:grid;grid-template-columns:repeat(14,1fr);gap:4px;margin:8px 0}
 .heatmap-cell{aspect-ratio:1;border-radius:4px;background:var(--surface-2);border:1px solid var(--border);transition:background-color var(--duration-fast) var(--ease-out)}
 .heatmap-cell.l0{background:var(--surface-2)}
@@ -1047,7 +969,6 @@ body::before{
 .dot.l0{background:var(--surface-2)}.dot.l1{background:#dcebe2}.dot.l2{background:#9cc7ac}.dot.l3{background:#4f8f6a}.dot.l4{background:#1f5c3f}
 .stats-section-heading{font-size:13px;letter-spacing:.05em;margin:0 0 8px;color:var(--ink);font-weight:700}
 
-/* ============ Anagram / marathon ============ */
 .anagram-display{display:flex;flex-direction:column;align-items:center;gap:16px}
 .anagram-letters{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
 .anagram-letter{
@@ -1064,7 +985,6 @@ body::before{
 .marathon-step.active{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .marathon-step.done{background:var(--tile-correct);color:var(--tile-fg);border-color:var(--tile-correct)}
 
-/* ============ Education reading room ============ */
 .education-main{max-width:var(--max);margin:0 auto;padding:30px 20px 90px}
 .education-hero{position:relative;border-bottom:1px solid var(--border);padding:30px 0 38px;overflow:hidden}
 .education-hero::after{
@@ -1152,7 +1072,6 @@ body::before{
 .education-empty{padding:20px;color:var(--muted);border:1px dashed var(--border);border-radius:12px;font-size:14px}
 .education-source-note{margin:24px 0 0;font-size:13px;color:var(--muted);line-height:1.65;max-width:72ch}
 
-/* ============ Battle ============ */
 .battle-setup{
   width:min(100%,610px);
   background:var(--surface);
@@ -1199,7 +1118,6 @@ body::before{
 .battle-result-summary .battle-reader{font-family:var(--font-sans)}
 .battle-result-summary .battle-reader.winner{border-color:var(--tile-correct);background:color-mix(in srgb,var(--tile-correct) 9%,var(--surface))}
 
-/* Personal-day record */
 #statsModal .modal-card{width:min(100%,610px)}
 .personal-board,.battle-record{border-top:1px solid var(--border);padding-top:20px;margin-top:24px}
 .personal-board-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
@@ -1227,7 +1145,6 @@ body::before{
 .history-list{margin-top:16px}
 .history-list h4{font-size:13.5px;letter-spacing:.01em;margin:0 0 6px}
 
-/* ============ Zen ============ */
 [data-zen="on"]{
   --bg:#f1f5f1;--surface:#fbfdfb;--surface-2:#e8f0ea;
   --ink:#1f322a;--muted:#55685b;--border:#d5e2d8;--border-2:#bcd0c1;
@@ -1269,7 +1186,6 @@ body::before{
 [data-zen="on"] .battle-clock{display:none}
 [data-zen="on"] .tile.flip{animation:none}
 
-/* ============ Responsive ============ */
 @media(max-width:980px){
   .hero-inner{grid-template-columns:1fr;gap:28px}
   .hero-right{position:static}
@@ -1315,8 +1231,7 @@ body::before{
   .key.wide{flex:1.6}
   .reading-promo{grid-template-columns:1fr;gap:20px;padding:24px}
   .reading-promo-example{rotate:0deg}
-  #themeQuickBtn{display:none}   /* theme stays reachable in Settings on phones */
-  .education-grid{grid-template-columns:1fr}
+  #themeQuickBtn{display:none}     .education-grid{grid-template-columns:1fr}
   .education-hero{padding-top:12px}
   .education-hero::after{font-size:180px;top:-25px;right:0;opacity:.3}
   .education-feature{grid-template-columns:1fr}
@@ -1334,16 +1249,13 @@ body::before{
   .game-view .page{grid-template-columns:minmax(0,1fr)}
 }
 
-/* Long movie titles keep every tile inside the viewport */
 .board.long-word{width:min(100%,600px);max-width:600px;aspect-ratio:auto;grid-template-rows:repeat(var(--rows),auto);gap:6px}
 .board.long-word .row{grid-template-columns:repeat(var(--cols),minmax(0,1fr));gap:3px}
 .board.long-word .tile{min-width:0;width:100%;font-size:clamp(11px,2.6vw,17px);letter-spacing:0;border-radius:5px}
 @media(max-width:640px){.board.long-word .tile{font-size:clamp(10px,3vw,14px)}}
 
-/* ============ States that must not animate on load ============ */
 [hidden]{display:none!important}
 
-/* ============ Reduced motion ============ */
 @media(prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   .tile,.key,.modal-card,.modal,.toast,.dynamic-island,.archive-card,.hero-preview,
@@ -1356,25 +1268,18 @@ body::before{
   .zen-orb{box-shadow:0 0 0 5px color-mix(in srgb,var(--accent) 12%,transparent)}
 }
 
-/* ============ View-scoped typography ============ */
-/* Home page speaks in a funky display voice; everything else stays editorial. */
 .hero-view,
 .hero-view :is(h1,h2,h3,h4,h5,h6,p,li,a,button,span,div,em,strong,small,figcaption,dt,dd){
   font-family:var(--font-funky);
 }
-/* The reading room is set properly in Times New Roman. */
 .education-view,
 .education-view :is(h1,h2,h3,h4,h5,h6,p,li,a,button,span,div,em,strong,small,figcaption,dt,dd,blockquote){
   font-family:var(--font-formal);
 }
 
-/* ============ Sticky notes ============
-   Cards, panels and modals read as sticky notes. Pressing a note lifts it
-   and curls the bottom-right corner. Game tiles, keys and the mode list
-   panel are not included. */
 :is(.hero-preview,.reading-promo-example,.archive-card,.idea-card,.stat,
     .education-feature,.definition-box,.result-definition-box,.battle-panel,
-    .battle-curtain-card,.modal-card,.time-machine){
+    .battle-curtain-card,.modal-card,.time-machine,.dict-card,.random-word,.age-gate){
   --ink:#2b2611;
   --muted:#5e5426;
   --border:#e2cc6a;
@@ -1420,10 +1325,9 @@ body::before{
       .battle-curtain-card,.modal-card,.time-machine)::before{transition:none}
 }
 
-/* ============ Ink note colours ============ */
 :is([data-theme="ink"],[data-theme="panther"]) :is(.hero-preview,.reading-promo-example,.archive-card,.idea-card,.stat,
     .education-feature,.definition-box,.result-definition-box,.battle-panel,
-    .battle-curtain-card,.modal-card,.time-machine){
+    .battle-curtain-card,.modal-card,.time-machine,.dict-card,.random-word,.age-gate){
   --ink:#f3f3fa;
   --muted:#d3d5e8;
   --border:#7a7e98;
@@ -1439,7 +1343,6 @@ body::before{
   background:linear-gradient(to top left,#3b3f57 50%,transparent 50%);
 }
 
-/* ============ Hangman keyboard: wrong letters are cut and fall away ============ */
 .key.gone{visibility:hidden}
 .key.cut{position:relative;z-index:3;pointer-events:none;animation:keyCut .75s cubic-bezier(.5,0,.75,.2) forwards}
 .key.cut::after{content:"";position:absolute;left:-4px;right:-4px;top:50%;border-top:2px dashed currentColor;opacity:0;animation:cutLine .75s steps(1) forwards}
@@ -1453,7 +1356,6 @@ body::before{
 }
 @keyframes cutLine{0%,15%{opacity:.9}16%,100%{opacity:0}}
 
-/* ============ Page peel (opening a game) ============ */
 .peel-sheet{
   position:fixed;inset:0;z-index:10000;
   background:linear-gradient(180deg,#fff7c4 0%,#fff0a2 100%);
@@ -1461,7 +1363,6 @@ body::before{
 }
 [data-theme="panther"] .peel-sheet,[data-theme="ink"] .peel-sheet{background:linear-gradient(180deg,#6a6e88 0%,#4a4e66 100%)}
 
-/* ============ Launch: the selected card grows to full screen ============ */
 .peel-sheet > .launch-card{
   position:absolute !important;inset:0 !important;
   width:100% !important;height:100% !important;
@@ -1469,7 +1370,6 @@ body::before{
   box-shadow:none !important;border-radius:0 !important;transition:none !important;
 }
 
-/* ============ Mode title on the launch sheet ============ */
 .peel-title{
   position:absolute;left:50%;top:50%;translate:-50% -50%;z-index:2;
   font-family:var(--font-display);font-weight:700;letter-spacing:-.02em;
@@ -1479,13 +1379,11 @@ body::before{
 }
 [data-theme="ink"] .peel-title,[data-theme="panther"] .peel-title{color:#f3f3fa}
 @keyframes peelTitleIn{from{opacity:0;scale:.92}to{opacity:1;scale:1}}
-/* ============ Screen reader only ============ */
 .sr-only{
   position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
   clip:rect(0,0,0,0);white-space:nowrap;border:0;
 }
 
-/* ============ Home swipe sheet ============ */
 .swipe-sheet{
   position:fixed;inset:0;z-index:10000;
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;
@@ -1497,7 +1395,6 @@ body::before{
 .swipe-time{font-family:var(--font-mono);font-size:clamp(18px,2.6vw,26px);letter-spacing:.12em;opacity:.9}
 .swipe-name{font-family:var(--font-display);font-weight:700;font-size:clamp(56px,12vw,150px);letter-spacing:-.02em;line-height:1}
 
-/* ============ Hangman: board layout, warning popup, flying letters ============ */
 .board.hangman-board{display:block;grid-template-rows:none;aspect-ratio:auto}
 .hangman-wrap{position:relative}
 .hm-warning{
@@ -1520,7 +1417,6 @@ body::before{
 }
 .swipe-date{font-family:var(--font-mono);font-size:clamp(16px,2.2vw,22px);letter-spacing:.16em;opacity:.9}
 
-/* ============ Battle: forfeit duel popup ============ */
 .duel-overlay{
   position:fixed;inset:0;z-index:11000;display:grid;place-items:center;padding:20px;
   background:rgba(12,12,22,.5);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
@@ -1561,7 +1457,6 @@ body::before{
   .duel-overlay,.duel-card,.duel-stamp{animation:none}
 }
 
-/* ============ Education: typewriter transition ============ */
 .type-sheet{
   position:fixed;inset:0;z-index:10000;display:grid;place-items:center;
   background:#f7f2e7;color:#1d1a14;pointer-events:auto;
@@ -1575,10 +1470,8 @@ body::before{
 }
 @keyframes typeBlink{50%{opacity:0}}
 
-/* ============ Island: black when collapsed (expanded panel unchanged) ============ */
 .dynamic-island:not(.expanded){background:#000}
 
-/* ============ Surprise me: slot reel ============ */
 .slot-window{
   position:relative;height:88px;overflow:hidden;margin:18px 0;border-radius:12px;
   background:var(--surface-2);
@@ -1592,7 +1485,6 @@ body::before{
   letter-spacing:.04em;text-transform:uppercase;color:var(--ink);
 }
 
-/* ============ Education card traits ============ */
 .trait-badge{
   display:inline-block;margin-left:8px;padding:3px 9px;border-radius:999px;border:1px solid currentColor;
   font-family:var(--font-mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;vertical-align:middle;opacity:.85;
@@ -1636,3 +1528,59 @@ body::before{
 }
 #eduFeature.trait-golden small,#eduFeature.trait-silver small{color:var(--muted)}
 #eduFeature.trait-golden a,#eduFeature.trait-silver a{color:var(--ink)}
+
+.edu-search-wrap{position:relative}
+.edu-ghost{
+  position:absolute;inset:0;z-index:2;pointer-events:none;white-space:pre;overflow:hidden;
+  display:flex;align-items:center;color:transparent;
+}
+.ghost-typed{color:transparent}
+.ghost-rest{color:var(--muted);opacity:.55}
+.dict-suggest{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;max-width:720px;margin:12px auto 0}
+.dict-suggest[hidden],.dict-panel[hidden]{display:none}
+.dict-card{
+  font:inherit;text-align:left;cursor:pointer;padding:12px 14px;border-radius:12px;
+  border:1px solid transparent;
+}
+.dict-card-word{display:block;font-family:'Times New Roman',Times,serif;font-size:18px;font-weight:700;line-height:1.2;overflow-wrap:anywhere}
+.dict-card-why{display:block;margin-top:4px;font-size:12px;line-height:1.3;color:var(--muted)}
+.dict-card:focus-visible,.dict-play:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.random-word{margin:0 0 18px;padding:18px 20px;border-radius:14px}
+.random-word-label{display:block;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.random-word-title{display:block;margin:6px 0 4px;font-family:'Times New Roman',Times,serif;font-size:34px;line-height:1.15;overflow-wrap:anywhere}
+.random-word-def{margin:0 0 12px;font-family:'Times New Roman',Times,serif;font-size:16px;line-height:1.45;color:var(--ink)}
+.random-word-open{font:inherit;font-size:14px;padding:6px 14px;border-radius:999px;cursor:pointer;border:1px solid var(--border-2);background:transparent;color:var(--ink)}
+.random-word-open[hidden]{display:none}
+.random-word-open:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.dict-panel{
+  max-width:720px;margin:18px auto 0;padding:22px 24px;border-radius:16px;
+  background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow);
+  font-family:'Times New Roman',Times,serif;color:var(--ink);
+}
+.dict-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.dict-word{margin:0;font-size:34px;line-height:1.1;color:var(--ink)}
+.dict-phonetic{display:block;color:var(--muted);font-size:16px;margin-top:4px}
+.dict-play{
+  font:inherit;font-size:14px;padding:8px 14px;border-radius:999px;cursor:pointer;
+  border:1px solid var(--border-2);background:var(--surface-2);color:var(--ink);
+}
+.dict-pos{display:inline-block;font-style:italic;color:var(--muted);margin:16px 0 4px}
+.dict-defs{margin:0;padding-left:22px;line-height:1.55}
+.dict-example{color:var(--muted)}
+.dict-status{color:var(--muted);font-style:italic;margin:0}
+
+.age-gate{max-width:720px;margin:12px auto 0;padding:18px 20px;border-radius:14px;display:grid;gap:10px}
+.age-gate[hidden]{display:none}
+.age-gate-label{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.age-gate-text,.age-gate-q{margin:0;font-family:'Times New Roman',Times,serif;font-size:17px;line-height:1.45;color:var(--ink)}
+.age-gate-btn,.age-gate-option{font:inherit;font-size:15px;padding:9px 16px;border-radius:999px;cursor:pointer;border:1px solid var(--border-2);background:transparent;color:var(--ink);justify-self:start}
+.age-gate-options{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px}
+.age-gate-option{justify-self:stretch;text-align:left;border-radius:12px}
+.age-gate-option:disabled{opacity:.55;cursor:default}
+.age-gate-timer{height:6px;border-radius:3px;overflow:hidden;background:rgba(0,0,0,.12)}
+.age-gate-timer span{display:block;height:100%;background:var(--accent);transform-origin:left center;transform:scaleX(1)}
+.age-gate-status{margin:0;font-size:14px;color:var(--muted)}
+.age-gate-btn:focus-visible,.age-gate-option:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (prefers-reduced-motion: reduce){.age-gate-timer span{transition:none!important}}
+
+.age-gate-link{font:inherit;font-size:14px;background:none;border:none;color:var(--muted);text-decoration:underline;cursor:pointer;justify-self:start;padding:4px 0}

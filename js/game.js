@@ -1,9 +1,5 @@
-// LEXICON Core Engine — Expanded with Hard Mode, Marathon, Anagram
 import { FIVE_LETTER_ALLOWED, FOUR_LETTER, SIX_LETTER_ANSWERS, MOVIE_DATA } from './words.js';
 
-// Language the archive refuses to accept as a submission. The answer pools in
-// words.js are cleaned of these entries at generation time, so rejecting here
-// can never make a round unsolvable.
 export const PROHIBITED = new Set([
   'FUCK','FUCKS','FUCKER','FUCKED','FUCKING','SHIT','SHITS','SHITTY',
   'CRAP','CRAPS','ARSE','ARSES','ARSEHOLE','ASS','ASSHOLE',
@@ -45,8 +41,6 @@ export function isValidWord(word, mode){
   return true;
 }
 
-// A new guess must honour all revealed green positions and the highest
-// number of yellow/green occurrences of each letter in any earlier row.
 export function checkHardMode(guess, previousGuesses, evaluations){
   if(previousGuesses.length===0) return {ok:true};
   const requiredPositions = new Map();
@@ -167,7 +161,6 @@ export class AnagramGame {
   constructor(answer){
     this.answer = answer.toUpperCase();
     this.shuffled = this.shuffle(this.answer);
-    // Ensure shuffled != answer
     let attempts=0;
     while(this.shuffled===this.answer && attempts<10){
       this.shuffled=this.shuffle(this.answer);
@@ -199,13 +192,12 @@ export class AnagramGame {
   }
   hint(){
     this.hintsUsed++;
-    // reveal one letter position
     return this.answer;
   }
 }
 
 export class MarathonGame {
-  constructor(words, options={}){ // words = [{mode, answer}]
+  constructor(words, options={}){
     this.stages = words;
     this.currentStage = 0;
     this.hardMode=!!options.hardMode;
@@ -239,8 +231,6 @@ export class MarathonGame {
   erase(){ this.currentGame.erase(); }
 }
 
-// Pass-and-play: two separate boards, one shared word. A valid guess is
-// reviewed before the device is handed over; clocks count only active turns.
 export class BattleGame {
   constructor(answer, options={}){
     this.answer = answer.toUpperCase();
@@ -252,7 +242,7 @@ export class BattleGame {
     this.untimed=!!options.zen;
     this.activeIndex=0;
     this.nextIndex=null;
-    this.phase='handoff'; // handoff -> turn -> review -> handoff / finished
+    this.phase='handoff';
     this.status='playing';
     this.result=null;
   }
@@ -285,7 +275,6 @@ export class BattleGame {
     const response=this.currentGame.submit();
     if(!response.ok) return response;
     this.pauseClock();
-    // The second reader has had the same number of turns as the first.
     if(this.activeIndex===1 && (this.games.some(g=>g.status==='won') || this.games.every(g=>g.status==='lost'))){
       return this.finish();
     }

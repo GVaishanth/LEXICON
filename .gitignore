@@ -1,13 +1,4 @@
-# Deployment & workspace noise — never part of the published site
-.cache/
-.local/
-.npm/
-.node_repl_history
-.impeccable/
-*.zip
-Unselected files/
-.DS_Store
-
-# Optional local archive-regeneration environment
-.venv/
 __pycache__/
+*.pyc
+.venv/
+.DS_Store

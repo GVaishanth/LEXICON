@@ -1,7 +1,3 @@
-// LEXICON - Hangman clue bank
-// Each five-letter answer is paired with a short riddle-style clue so the
-// Gallows mode always opens with a question related to the word.
-// Keys are uppercase five-letter words; clue text never contains the answer.
 
 export const HANGMAN_CLUES = {
   'ABIDE': 'To tolerate something you would rather avoid',
@@ -696,7 +692,6 @@ export const HANGMAN_CLUES = {
   'ZEBRA': 'The striped horse of the African plain'
 };
 
-// Return a fresh random word and its clue for a Gallows round.
 export function getClueWord(){
   const keys = Object.keys(HANGMAN_CLUES);
   const key = keys[Math.floor(Math.random()*keys.length)];

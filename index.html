@@ -13,7 +13,6 @@
   <link rel="stylesheet" href="./css/style.css?v=2" />
 </head>
 <body>
-  <!-- Dynamic Island Navigation -->
   <div class="island-wrap" id="islandWrap">
     <nav class="dynamic-island" id="dynamicIsland" aria-label="Primary navigation">
       <div class="island-top">
@@ -89,13 +88,12 @@
     </nav>
   </div>
 
-  <!-- HERO VIEW -->
   <div id="heroView" class="view hero-view active">
     <section class="hero">
       <div class="hero-inner">
         <div class="hero-left">
           <div class="folio-ledger" aria-label="Archive edition metadata">
-            <span class="folio-chip">Vol. VI · Oxford Archive</span>
+            <span class="folio-chip">Vol. VI · Word Archive</span>
             <span class="folio-sep" aria-hidden="true">·</span>
             <span class="folio-item">20,207 Headwords</span>
             <span class="folio-sep" aria-hidden="true">·</span>
@@ -146,7 +144,6 @@
               <div class="t-tilt-glare" aria-hidden="true"></div>
             </div>
           </div>
-          <!-- Time Machine -->
           <div class="time-machine">
             <div class="tm-head"><span class="tm-title">Time Machine</span><span class="tm-sub">Revisit earlier days</span></div>
             <div class="tm-controls">
@@ -167,8 +164,8 @@
 
     <section class="archive-grid-section">
       <div class="section-head">
-        <h2>Collections · Oxford Expanded</h2>
-        <p>Nine ways to play, drawn from the Oxford 5000, dwyl 370k, and Wordle corpora.</p>
+        <h2>Collections · Expanded</h2>
+        <p>Nine ways to play, drawn from common-word lists, dwyl 370k, and Wordle corpora.</p>
       </div>
       <div class="archive-grid">
         <article class="archive-card featured" data-mode="daily">
@@ -184,8 +181,8 @@
         <article class="archive-card" data-mode="4">
           <div class="card-top"><span class="card-badge">4-Letter</span><span class="card-time">2,495 entries</span></div>
           <h3>Concise Archive</h3>
-          <p>Four-letter headwords filtered from the Oxford 5000. Brisk and sharp.</p>
-          <div class="card-meta"><span>Oxford 5000</span><span>·</span><span>Quick</span></div>
+          <p>Four-letter headwords from common-word lists. Brisk and sharp.</p>
+          <div class="card-meta"><span>Common words</span><span>·</span><span>Quick</span></div>
           <button class="card-cta t-learn btn-with-icon" type="button"><span>Play</span><span class="t-learn-chevron" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path class="t-learn-arm t-learn-arm-top" d="M6 4L10 8"/><path class="t-learn-arm t-learn-arm-bot" d="M10 8L6 12"/></svg></span></button>
         </article>
         <article class="archive-card" data-mode="5">
@@ -199,7 +196,7 @@
           <div class="card-top"><span class="card-badge extended">Extended</span><span class="card-time">4,999 entries</span></div>
           <h3>Six-Letter</h3>
           <p>Six-letter vocabulary where prefixes and suffixes shift the deduction.</p>
-          <div class="card-meta"><span>Oxford + dwyl</span><span>·</span><span>Extended</span></div>
+          <div class="card-meta"><span>Common + dwyl</span><span>·</span><span>Extended</span></div>
           <button class="card-cta t-learn btn-with-icon" type="button"><span>Play</span><span class="t-learn-chevron" aria-hidden="true"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path class="t-learn-arm t-learn-arm-top" d="M6 4L10 8"/><path class="t-learn-arm t-learn-arm-bot" d="M10 8L6 12"/></svg></span></button>
         </article>
         <article class="archive-card" data-mode="movie">
@@ -308,7 +305,6 @@
     </section>
   </div>
 
-  <!-- GAME VIEW -->
   <div id="gameView" class="view game-view">
     <main class="page">
       <section class="game-col">
@@ -403,7 +399,6 @@
     </main>
   </div>
 
-  <!-- EDUCATION: independent reading room, not a scored game -->
   <div id="educationView" class="view education-view">
     <main class="education-main">
       <header class="education-hero">
@@ -439,14 +434,24 @@
           </div>
           <span id="eduCount" class="education-count" aria-live="polite"></span>
         </div>
+        <section class="random-word" id="eduRandomWord" aria-labelledby="eduRandomLabel" aria-live="polite">
+          <span class="random-word-label" id="eduRandomLabel">Random word from the dictionary</span>
+          <strong class="random-word-title" id="eduRandomTitle">…</strong>
+          <p class="random-word-def" id="eduRandomDef"></p>
+          <button type="button" class="random-word-open" id="eduRandomOpen" hidden>Read the entry</button>
+        </section>
         <label class="education-search-label" for="eduSearch">Find a word or an origin</label>
         <div class="edu-search-wrap">
           <svg class="edu-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
           <input id="eduSearch" type="search" placeholder="Search words, roots, and stories…" autocomplete="off" />
+          <div class="edu-ghost" id="eduGhost" aria-hidden="true"></div>
           <button type="button" id="eduSearchClear" class="edu-search-clear" aria-label="Clear search" hidden>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
           </button>
         </div>
+        <section class="age-gate" id="ageGate" aria-label="18+ check" hidden></section>
+        <div class="dict-suggest" id="dictSuggest" hidden></div>
+        <section class="dict-panel" id="dictPanel" aria-label="Dictionary entry" aria-live="polite" hidden></section>
         <div class="education-filters t-tabs" id="eduFilters" role="group" aria-label="Filter word stories"><span class="t-tabs-pill" id="eduFilterPill" aria-hidden="true"></span></div>
         <div class="education-grid" id="eduGrid"></div>
         <p id="eduEmpty" class="education-empty" hidden>No stories match your search. Try another word or category.</p>
@@ -477,11 +482,10 @@
   <div id="srStatus" class="sr-only" role="status" aria-live="polite"></div>
   <div class="toast t-toast" id="toast" role="status" aria-live="polite"></div>
 
-  <!-- Modals -->
   <div class="modal" id="settingsModal" aria-hidden="true">
     <div class="modal-card">
       <div class="modal-head">
-        <div><h2 class="modal-title">Settings</h2><div class="modal-sub">Oxford archive &amp; gameplay</div></div>
+        <div><h2 class="modal-title">Settings</h2><div class="modal-sub">Archive &amp; gameplay</div></div>
         <button class="modal-close" type="button" data-close aria-label="Close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg></button>
       </div>
       <div class="modal-body prose">
@@ -497,7 +501,7 @@
         <div class="setting-row"><label><input type="checkbox" id="hardModeToggle"/> <span>Hard Mode · must reuse revealed hints</span></label></div>
         <div class="setting-row"><label><input type="checkbox" id="zenModeToggle"/> <span>Zen Mode · unscored, calm colours, no clocks</span></label><p class="setting-help">Zen entries do not change your statistics, daily record, day leaderboard, or streak. Turning it off mid-entry will not score that entry.</p></div>
         <div class="setting-row"><label><input type="checkbox" id="soundToggle"/> <span>Subtle key feedback</span></label></div>
-        <p class="muted modal-archive-note">Archive sizes: 4L 2,495 · 5L 20,207 allowed / 5,747 answers · 6L 4,999 · Movies 112. Sourced from Oxford 5000, dwyl 370k, and Wordle corpora.</p>
+        <p class="muted modal-archive-note">Archive sizes: 4L 2,495 · 5L 20,207 allowed / 5,747 answers · 6L 4,999 · Movies 112. Sourced from common-word lists, dwyl 370k, and Wordle corpora.</p>
       </div>
       <div class="modal-foot"><button class="btn" type="button" data-close>Close</button></div>
     </div>
@@ -506,7 +510,7 @@
   <div class="modal" id="helpModal" aria-hidden="true">
     <div class="modal-card">
       <div class="modal-head">
-        <div><h2 class="modal-title">How to Play</h2><div class="modal-sub">Oxford archive edition</div></div>
+        <div><h2 class="modal-title">How to Play</h2><div class="modal-sub">Archive edition</div></div>
         <button class="modal-close" type="button" data-close aria-label="Close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg></button>
       </div>
       <div class="modal-body prose">

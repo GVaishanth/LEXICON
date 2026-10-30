@@ -1,6 +1,12 @@
+import { lookupWord, rankSuggestions, loadWordList, loadUsage, recordLookup, hasWord } from './dictionary.js';
+import { isAdultWord, containsAdultWord } from './adult-words.js';
+import { isVerified, markVerified, pickQuestion } from './age-gate.js';
+const shelfState={order:LORE_ENTRIES.slice(),lastFeatured:null};
+let openDictionaryEntry=()=>{};
+let randomWordRequest=0,lastRandomWord='';
 import { FOUR_LETTER, FIVE_LETTER_ANSWERS, FIVE_LETTER_ALLOWED, SIX_LETTER_ANSWERS, MOVIE_DATA, getRandomWord, getMovieMeta } from './words.js';
 import { getClueWord } from './clues.js';
-import { Game, HangmanGame, AnagramGame, MarathonGame, BattleGame } from './game.js';
+import { Game, HangmanGame, AnagramGame, MarathonGame, BattleGame, PROHIBITED } from './game.js';
 import { LORE_ENTRIES, LORE_CATEGORIES, filterLore } from './education.js';
 import { localDayKey, groupPersonalDays, rankPersonalDays, getDayStreaks } from './leaderboard.js';
 
@@ -8,7 +14,7 @@ const $=selector=>document.querySelector(selector);
 const $$=selector=>[...document.querySelectorAll(selector)];
 const storage={
   get(key){try{return localStorage.getItem(key)}catch{return null}},
-  set(key,value){try{localStorage.setItem(key,value)}catch{ /* Private browsing can disable storage. */ }}
+  set(key,value){try{localStorage.setItem(key,value)}catch{ }}
 };
 const readJSON=(key,fallback)=>{try{return JSON.parse(storage.get(key))??fallback}catch{return fallback}};
 const savedStats=readJSON('lexicon.v1.stats',{});
@@ -29,15 +35,10 @@ const boardEl=$('#board'), keyboardEl=$('#keyboard'),hintBar=$('#hintBar');
 const curtain=$('#battleCurtain');
 const prefersReduced=()=>window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-/* ============ Motion layer ============
-   Recipes from transitions.dev, choreography from the GSAP skills,
-   interaction manners from make-interfaces-feel-better.
-   Motion never carries meaning alone: every swap keeps a static cue. */
 const gsapRef=window.gsap||null;
 if(gsapRef&&window.Flip) gsapRef.registerPlugin(window.Flip);
 let motionReady=false;
 
-/* p6 · Text states swap: soft blur exchange for dynamic status copy. */
 function swapText(el,text){
   if(!el||el.textContent===text) return;
   if(prefersReduced()){el.textContent=text;return}
@@ -52,9 +53,6 @@ function swapText(el,text){
   },160);
 }
 
-/* p16 · Sliding pill: JS measures the active tab; the travel tweens in CSS
-   while width tweens in GSAP, so no layout property sits in a CSS transition.
-   Snap without animation on first paint and on resize so the pill never desyncs. */
 function movePill(container,animate=true){
   if(!container) return;
   const pill=container.querySelector('.t-tabs-pill');
@@ -84,8 +82,6 @@ function snapAllPills(){
   movePill($('#leaderboardTabsWrap'),false);
 }
 
-/* p19 · 3D tilt specimen plates: GSAP retargeting keeps the follow
-   interruptible; the return sweep decelerates on release. */
 function attachTilt(wrap){
   if(!wrap||!gsapRef||prefersReduced()) return;
   if(!window.matchMedia('(hover:hover)').matches) return;
@@ -98,7 +94,7 @@ function attachTilt(wrap){
     card.style.setProperty('--tilt-gx',`${proxy.gx.toFixed(2)}%`);
     card.style.setProperty('--tilt-gy',`${proxy.gy.toFixed(2)}%`);
   };
-  write(); // resting values live on the element from the start
+  write();
   wrap.addEventListener('pointerenter',()=>wrap.classList.add('is-hover'));
   wrap.addEventListener('pointermove',event=>{
     const rect=card.getBoundingClientRect();
@@ -115,8 +111,6 @@ function attachTilt(wrap){
   });
 }
 
-/* The authored moment: one rehearsal per arrival on the archive home.
-   Built with a matchMedia guard so reduced-motion readers get none. */
 function playHeroEntrance(){
   if(!gsapRef||prefersReduced()) return;
   const mm=gsapRef.matchMedia();
@@ -132,7 +126,6 @@ function playHeroEntrance(){
   });
 }
 
-/* Buttons labelled with the opening chevron (p24) built from one helper. */
 function setArrowLabel(button,text){
   if(!button) return;
   const label=make('span','',text);
@@ -149,8 +142,6 @@ function syncIslandExpandUI(){
   if(button) button.setAttribute('aria-expanded',String(!!expanded));
 }
 
-// Calendar days, rather than elapsed local milliseconds, keep the daily word
-// identical across time zones and across daylight-saving transitions.
 function dailyWordFor(date){
   const day=Math.floor(Date.UTC(date.getFullYear(),date.getMonth(),date.getDate())/86400000);
   const first=Math.floor(Date.UTC(2022,0,1)/86400000);
@@ -195,8 +186,6 @@ function formatClock(ms){
   return `${String(Math.floor(seconds/60)).padStart(2,'0')}:${String(seconds%60).padStart(2,'0')}.${tenths}`;
 }
 
-// Personal leaderboard is a ranking of the reader's own calendar days.
-// Timed battles live in their own record; Zen and past-date replays do not rank.
 function renderPersonalRecord(){
   const {current,best}=getDayStreaks(state.history);
   for(const id of ['statPlayed','statPlayedM','heroStatPlayed']) $('#'+id).textContent=state.stats.played;
@@ -273,13 +262,11 @@ function renderMatchRecord(){
   });
 }
 
-// View selection. Education is deliberately not in the play-mode group.
 const titles={daily:'Daily Dispatch','4':'Four-Letter Archive','5':'Five-Letter Classic','6':'Six-Letter Archive',movie:'Movie Finds',hangman:'Hangman',marathon:'Marathon',anagram:'Anagram',battle:'Battle'};
 const subtitles={daily:'One word a day for every reader','4':'Four letters, six attempts','5':'The classic five-letter challenge','6':'Six letters, six attempts',movie:'A cinematic clue from the archive',hangman:'Find the word from its clue before the final error',marathon:'Three words · four, five, six letters',anagram:'Make a word from the shuffled letters',battle:'Two private boards · one shared word'};
 function battleInProgress(){
   return state.view==='game' && state.mode==='battle' && state.battle?.status==='playing';
 }
-/* Custom duel popup. Calls proceed() only if the player forfeits. */
 function confirmForfeit(proceed){
   if(document.querySelector('.duel-overlay')) return;
   const overlay=make('div','duel-overlay');
@@ -369,7 +356,6 @@ function showGame(mode,options={}){
   $('#gameSubtitle').textContent=subtitles[mode];
   initGame(mode);
 }
-/* Surprise me: a slot reel spins through words and lands on one. */
 function spinEducationSlot(){
   const btn=$('#eduSurpriseBtn');if(btn.disabled) return;
   state.eduCategory='All';state.eduQuery='';$('#eduSearch').value='';
@@ -378,6 +364,7 @@ function spinEducationSlot(){
   if(target===state.eduSelected&&LORE_ENTRIES.length>1) target=LORE_ENTRIES[(LORE_ENTRIES.indexOf(target)+1)%LORE_ENTRIES.length];
   const host=$('#eduFeature');
   host.hidden=false;host.classList.remove('trait-golden','trait-silver');
+  eduUI.lastFeature=null;
   const reel=make('div','slot-window');reel.setAttribute('aria-hidden','true');
   const strip=make('div','slot-strip');
   const N=26;
@@ -398,7 +385,6 @@ function spinEducationSlot(){
     {transform:`translateY(${-(N-1)*88}px)`,filter:'blur(0px)'}
   ],{duration:2600,easing:'cubic-bezier(.12,.75,.2,1)',fill:'forwards'}).finished.then(()=>setTimeout(land,380),()=>land());
 }
-/* Education entry: the words "The Reading Room" are typed onto a paper sheet first. */
 function openEducation(){
   if(battleInProgress()||matchMedia('(prefers-reduced-motion: reduce)').matches||!document.body.animate){showEducation();return}
   const sheet=make('div','type-sheet');sheet.setAttribute('aria-hidden','true');
@@ -423,15 +409,59 @@ function showEducation(word=null){
   resetSession();state.mode='education';switchView('education');
   $('#eduSearch').value='';state.eduQuery='';
   const clear=$('#eduSearchClear');if(clear) clear.hidden=true;
+  if(!word) reshuffleShelf();
   if(word){
     const found=LORE_ENTRIES.find(item=>item.word===word.toUpperCase());
     if(found){state.eduCategory='All';state.eduQuery='';state.eduSelected=found}
   }
   renderEducation();
+  if(!word) refreshRandomWord();
+}
+
+function reshuffleShelf(){
+  buildEducationLibrary();
+  const order=LORE_ENTRIES.slice();
+  for(let i=order.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[order[i],order[j]]=[order[j],order[i]]}
+  if(order.length>1&&order[0]===shelfState.lastFeatured){[order[0],order[1]]=[order[1],order[0]]}
+  shelfState.order=order;
+  shelfState.lastFeatured=order[0];
+  state.eduSelected=order[0];
+  const grid=$('#eduGrid');
+  for(const item of order){const button=eduUI.entries.get(item);if(button) grid.append(button)}
+}
+
+async function refreshRandomWord(){
+  const card=$('#eduRandomWord');if(!card) return;
+  const title=$('#eduRandomTitle'),def=$('#eduRandomDef'),open=$('#eduRandomOpen');
+  const request=++randomWordRequest;
+  title.textContent='…';def.textContent='Choosing a word…';open.hidden=true;
+  const words=await loadWordList().catch(()=>null);
+  if(request!==randomWordRequest) return;
+  if(!words){def.textContent='The word list loads on first visit. Reconnect once to fill it.';return}
+  for(let attempt=0;attempt<4;attempt++){
+    let word;
+    do{word=words[Math.floor(Math.random()*words.length)]}while((word===lastRandomWord||isAdultWord(word))&&words.length>1);
+    lastRandomWord=word;
+    title.textContent=word;def.textContent='Loading the definition…';
+    try{
+      const entry=await lookupWord(word);
+      if(request!==randomWordRequest) return;
+      const first=entry.meanings.flatMap(m=>m.defs.map(d=>`${m.pos}: ${d.def}`))[0]||'No definition available.';
+      def.textContent=first;
+      open.hidden=false;open.onclick=()=>openDictionaryEntry(word);
+      return;
+    }catch(error){
+      if(request!==randomWordRequest) return;
+      if(error.message!=='not-found'){
+        def.textContent=navigator.onLine?'Definition unavailable right now.':'Definitions need an internet connection.';
+        return;
+      }
+    }
+  }
+  def.textContent='No definition found for this word. Try another visit.';
 }
 
 function renderHeroPreview(){
-  // Fixed illustration evaluated against STANE, an allowed word excluded from Daily answers.
   const grid=$('#heroPreviewBoard');grid.replaceChildren();
   const rows=[
     {word:'CRANE',marks:['absent','absent','correct','correct','correct']},
@@ -494,8 +524,6 @@ function make(tag,className='',text=''){
   node.textContent=text;
   return node;
 }
-/* Education keeps one persistent DOM: entries and filters are built once so
-   layout changes can animate with Flip while search stays instant. */
 const eduUI={built:false,filters:new Map(),entries:new Map()};
 function buildEducationLibrary(){
   if(eduUI.built) return;
@@ -538,7 +566,7 @@ function buildEducationLibrary(){
 }
 function updateEducation(flipSnapshot=null){
   buildEducationLibrary();
-  const results=filterLore(state.eduQuery,state.eduCategory);
+  const results=filterLore(state.eduQuery,state.eduCategory).sort((a,b)=>shelfState.order.indexOf(a)-shelfState.order.indexOf(b));
   if(results.length && !results.includes(state.eduSelected)) state.eduSelected=results[0];
   $('#eduCount').textContent=`${results.length} of ${LORE_ENTRIES.length} stories`;
   $('#eduEmpty').hidden=!!results.length;
@@ -559,7 +587,10 @@ function updateEducation(flipSnapshot=null){
     button.setAttribute('aria-pressed',String(active));
   }
   if(flipSnapshot) window.Flip.from(flipSnapshot,{duration:.4,ease:'power2.out'});
-  renderSelectedLore();
+  if(eduUI.lastFeature!==state.eduSelected){
+    eduUI.lastFeature=state.eduSelected;
+    renderSelectedLore();
+  }
 }
 function renderEducation(){updateEducation()}
 function renderSelectedLore(){
@@ -580,7 +611,6 @@ function renderSelectedLore(){
   host.append(aside,copy);
   if(trait!=='common'){host.classList.add(`trait-${trait}`);host.prepend(makeTraitFx(trait))}
 }
-/* Each word has a fixed trait: about 1 in 12 golden, about 1 in 6 silver, the rest common. */
 function traitOf(word){
   let h=0;for(const ch of word) h=(h*31+ch.charCodeAt(0))>>>0;
   const m=h%12;
@@ -764,7 +794,6 @@ function renderMarathonProgress(){
   });
   hintBar.replaceChildren(host);
 }
-/* Home: a sheet slides up showing the time and the LEXICON name, then slides away. */
 function swipeHome(run){
   if(matchMedia('(prefers-reduced-motion: reduce)').matches||!document.body.animate){run();return}
   const sheet=make('div','swipe-sheet');sheet.setAttribute('aria-hidden','true');
@@ -883,7 +912,7 @@ function playSound(){
     osc.type='sine';osc.frequency.value=460;gain.gain.setValueAtTime(.007,context.currentTime);
     gain.gain.exponentialRampToValueAtTime(.0001,context.currentTime+.045);
     osc.connect(gain).connect(context.destination);osc.start();osc.stop(context.currentTime+.045);
-  }catch{ /* Audio is optional. */ }
+  }catch{ }
 }
 function reportInvalid(result){
   shakeRow();
@@ -934,7 +963,6 @@ function hangmanGuess(letter){
   }
   if(h.status!=='playing') finishHangman();
 }
-/* Red warning popup and gallows shake for a wrong letter. */
 function showHangmanWarning(text,reduce){
   const wrap=document.querySelector('#board .hangman-wrap');if(!wrap) return;
   const warn=make('div','hm-warning',text);warn.setAttribute('role','alert');
@@ -944,7 +972,6 @@ function showHangmanWarning(text,reduce){
   const gallows=wrap.querySelector('.gallows');
   if(gallows&&!reduce&&gallows.animate) gallows.animate([{translate:'0 0'},{translate:'-6px 0'},{translate:'6px 0'},{translate:'-4px 0'},{translate:'0 0'}],{duration:380});
 }
-/* A correct letter flies from its key into each matching blank. */
 function flyToSlots(letter,from,before,h){
   const slots=[...document.querySelectorAll('#board .hm-letter')];
   h.getRevealed().forEach((ch,i)=>{
@@ -965,8 +992,6 @@ function flyToSlots(letter,from,before,h){
     },()=>fly.remove());
   });
 }
-/* Page change. From a game card, the card copy grows to full screen, the game
-   opens underneath, then the note peels away from the bottom-right corner. */
 function peelTo(run,fromEl,title=''){
   if(matchMedia('(prefers-reduced-motion: reduce)').matches||!document.body.animate){run();return}
   const sheet=make('div','peel-sheet');sheet.setAttribute('aria-hidden','true');
@@ -979,7 +1004,6 @@ function peelTo(run,fromEl,title=''){
       {clipPath:'polygon(0 0,100% 0,0 0,0 0,0 0)'}
     ],{duration:900,easing:'cubic-bezier(.45,0,.2,1)',fill:'forwards'}).finished.then(done,done);
   };
-  // Opens the game, then moves the big sheet title into the game title's place.
   const reveal=()=>{
     const from=label?label.getBoundingClientRect():null;
     run();
@@ -1204,7 +1228,6 @@ function handleBattleKey(key){
 }
 function passBattle(){
   const match=state.battle;if(!match || match.phase!=='review') return;
-  // Cover first: never briefly expose the incoming reader's board.
   coverBattleScreen();
   if(!match.advance()) return;
   renderBattlePanel();
@@ -1276,9 +1299,7 @@ function closeModals(restoreFocus=true){
   if(hadOpen) syncBattleClock();
   if(restoreFocus && lastModalTrigger?.isConnected && !lastModalTrigger.closest('.modal')) lastModalTrigger.focus();
 }
-// Public testers may still hold a pre-Celosia theme id in storage.
 const THEME_LEGACY={paper:'panther',gold:'panther',oxbridge:'blue',forest:'teal'};
-/* Day is Teal and night is Ink, from 06:00 to 17:59 local time. */
 function autoTheme(){const h=new Date().getHours();return h>=6&&h<18?'teal':'ink'}
 function setTheme(theme){
   theme=THEME_LEGACY[theme]||theme;
@@ -1357,8 +1378,6 @@ function bindIsland(){
   };
   $('#islandExpandBtn').addEventListener('click',toggleExpand);
   $('.island-top').addEventListener('click',event=>{if(!event.target.closest('button')) toggleExpand()});
-  // The navigation opens as a click-driven dropdown only; hover never opens or
-  // closes it, so pointer users on laptops can reach every wrapped pill.
   document.addEventListener('click',event=>{
     if(!island.contains(event.target)) closeIsland();
   });
@@ -1467,8 +1486,6 @@ document.documentElement.dataset.zen=state.zen?'on':'off';
 renderHeroPreview();renderPersonalRecord();renderEducation();
 switchView('hero');
 
-/* One-time motion setup: indicators snap first (no load animation),
-   then the authored hero rehearsal begins. */
 snapAllPills();
 motionReady=true;
 attachTilt($('#heroPreviewTilt'));
@@ -1481,9 +1498,175 @@ window.addEventListener('resize',()=>{
   pillResizeT=setTimeout(snapAllPills,160);
 });
 
-/* Offline support: register the service worker relative to this page. */
 (()=>{
   if(!('serviceWorker' in navigator)) return;
   const register=()=>navigator.serviceWorker.register('./sw.js').catch(()=>{});
   if(document.readyState==='complete') register(); else window.addEventListener('load',register);
 })();
+
+function createAgeCheck(host,{onOpen,onClose}={}){
+  let open=false,pendingValue='',timer=0;
+  const button=(cls,text,onClick)=>{const b=make('button',cls,text);b.type='button';b.addEventListener('click',onClick);return b};
+  const close=()=>{
+    clearTimeout(timer);
+    if(!open) return;
+    open=false;pendingValue='';
+    host.hidden=true;host.replaceChildren();
+    onClose?.();
+  };
+  function intro(value,then){
+    pendingValue=value;
+    if(!open){open=true;onOpen?.()}
+    host.hidden=false;
+    host.replaceChildren(
+      make('span','age-gate-label','18+ word'),
+      make('p','age-gate-text','This word is for adults. To continue, answer one short question to confirm you are 18 or older. Your answer is remembered for one hour.'),
+      button('age-gate-btn','Verify to continue',()=>ask(then)),
+      button('age-gate-link','Not now',close));
+  }
+  function ask(then){
+    const item=pickQuestion();
+    clearTimeout(timer);
+    host.replaceChildren();
+    const bar=make('span');
+    const track=make('div','age-gate-timer');track.append(bar);
+    const status=make('p','age-gate-status',`You have ${item.seconds} seconds.`);
+    status.setAttribute('role','status');
+    const options=make('div','age-gate-options');
+    let done=false;
+    const finish=(correct,timedOut)=>{
+      if(done) return;
+      done=true;clearTimeout(timer);
+      bar.style.transition='none';
+      options.querySelectorAll('button').forEach(b=>{b.disabled=true});
+      if(correct){
+        markVerified();
+        close();
+        then?.();
+        return;
+      }
+      status.textContent=timedOut?'Time is up. Try again with a new question.':'Not quite. Try again with a new question.';
+      host.append(button('age-gate-btn','Ask again',()=>ask(then)),button('age-gate-link','Not now',close));
+    };
+    item.options.forEach(text=>options.append(button('age-gate-option',text,()=>finish(text===item.answer,false))));
+    host.append(make('span','age-gate-label','Quick check'),make('p','age-gate-q',item.q),track,options,status);
+    bar.style.transition=`transform ${item.seconds}s linear`;
+    bar.style.transform='scaleX(1)';
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{bar.style.transform='scaleX(0)'}));
+    timer=setTimeout(()=>finish(false,true),item.seconds*1000);
+  }
+  return {intro,close,isOpen:()=>open,pending:()=>pendingValue};
+}
+
+function initDictionary(){
+  const input=$('#eduSearch');if(!input) return;
+  const ghost=$('#eduGhost'),list=$('#dictSuggest'),panel=$('#dictPanel');
+  const cs=getComputedStyle(input);
+  Object.assign(ghost.style,{padding:cs.padding,font:cs.font,letterSpacing:cs.letterSpacing});
+  let words=null,ranked=[],ghostWord='';
+  const getWords=()=>loadWordList().then(list=>(words=list));
+  (window.requestIdleCallback||(cb=>setTimeout(cb,300)))(()=>{getWords().catch(()=>{});loadUsage()});
+  const syncGhost=()=>{
+    ghost.replaceChildren();
+    const q=input.value;
+    if(!ghostWord||!q.trim()) return;
+    ghost.append(make('span','ghost-typed',q),make('span','ghost-rest',ghostWord.slice(q.trim().length)));
+  };
+  const educationAge=createAgeCheck($('#ageGate'));
+  const showGateIntro=(word,then)=>educationAge.intro(word,then);
+  const closeGate=()=>educationAge.close();
+
+  const renderSuggest=()=>{
+    list.replaceChildren();
+    const q=input.value.trim();
+    const verified=isVerified();
+    if(!verified&&containsAdultWord(q)){
+      if(!educationAge.isOpen()||educationAge.pending()!==q) showGateIntro(q,()=>renderSuggest());
+      ranked=[];ghostWord='';return;
+    }
+    if(educationAge.isOpen()) closeGate();
+    ranked=(!words||!q)?[]:rankSuggestions(q,words,6,verified);
+    ghostWord=(ranked.find(r=>r.kind==='prefix')||{}).word||'';
+    if(q.length<2){list.hidden=true;return}
+    ranked.forEach(r=>{
+      const card=make('button','dict-card');
+      card.type='button';
+      card.append(make('span','dict-card-word',r.word),make('span','dict-card-why',r.uses?`${r.reason} · searched ${r.uses}×`:r.reason));
+      card.setAttribute('aria-label',`${r.word}. ${r.reason}`);
+      card.addEventListener('click',()=>openDefinition(r.word));
+      list.append(card);
+    });
+    list.hidden=!ranked.length;
+  };
+  openDictionaryEntry=word=>{input.value=word;input.dispatchEvent(new Event('input'));openDefinition(word)};
+  const refresh=()=>getWords().then(()=>{renderSuggest();syncGhost()}).catch(()=>{});
+  input.addEventListener('focus',refresh);
+  input.addEventListener('input',refresh);
+  input.addEventListener('keydown',event=>{
+    if(!words) return;
+    if((event.key==='Tab'||event.key==='ArrowRight')&&!event.shiftKey&&input.selectionStart===input.value.length){
+      if(ghostWord){event.preventDefault();input.value=ghostWord;input.dispatchEvent(new Event('input'))}
+    }
+    if(event.key==='ArrowDown'&&!list.hidden){event.preventDefault();list.querySelector('.dict-card')?.focus()}
+    if(event.key==='Escape'&&!list.hidden){event.stopPropagation();list.hidden=true}
+    if(event.key==='Enter'){
+      const q=input.value.trim().toLowerCase();
+      const hit=hasWord(words,q)?q:(ranked[0]?.word||(/^[a-z][a-z'-]*$/.test(q)?q:''));
+      if(hit){event.preventDefault();openDefinition(hit)}
+    }
+  });
+  list.addEventListener('keydown',event=>{
+    const cards=[...list.querySelectorAll('.dict-card')];
+    const i=cards.indexOf(document.activeElement);
+    if(event.key==='Escape'){event.preventDefault();event.stopPropagation();input.focus();return}
+    if(i<0) return;
+    const step={ArrowRight:1,ArrowDown:1,ArrowLeft:-1,ArrowUp:-1}[event.key];
+    if(step){event.preventDefault();cards[(i+step+cards.length)%cards.length].focus()}
+  });
+  async function openDefinition(word){
+    if(isAdultWord(word)&&!isVerified()){showGateIntro(word,()=>openDefinition(word));return}
+    closeGate();
+    list.hidden=true;panel.hidden=false;
+    panel.replaceChildren(make('p','dict-status',`Looking up “${word}”…`));
+    try{
+      panel.replaceChildren(renderDefinition(await lookupWord(word)));
+      recordLookup(word);
+    }catch(error){
+      const msg=error.message==='not-found'?`No definition found for “${word}”. Check the spelling.`
+        :navigator.onLine?'The definition service is unavailable right now. Please try again soon.'
+        :'Definitions need an internet connection. Word search still works offline.';
+      panel.replaceChildren(make('p','dict-status',msg));
+    }
+  }
+  function renderDefinition(entry){
+    const card=make('div','dict-card');
+    const head=make('div','dict-head');
+    const titles=make('div','dict-titles');
+    titles.append(make('h3','dict-word',entry.word),make('span','dict-phonetic',entry.phonetic));
+    const play=make('button','dict-play','▶ Listen');play.type='button';
+    play.addEventListener('click',()=>speak(entry));
+    head.append(titles,play);
+    card.append(head);
+    entry.meanings.forEach(m=>{
+      const section=make('section','dict-meaning');
+      section.append(make('span','dict-pos',m.pos));
+      const ol=make('ol','dict-defs');
+      m.defs.forEach(d=>{
+        const li=make('li','',d.def);
+        if(d.example) li.append(make('em','dict-example',` “${d.example}”`));
+        ol.append(li);
+      });
+      section.append(ol);
+      card.append(section);
+    });
+    return card;
+  }
+  function speak(entry){
+    if(entry.audio){new Audio(entry.audio).play().catch(()=>speechFallback(entry.word));return}
+    speechFallback(entry.word);
+  }
+  function speechFallback(word){
+    if('speechSynthesis' in window){const u=new SpeechSynthesisUtterance(word);u.lang='en-GB';speechSynthesis.cancel();speechSynthesis.speak(u)}
+  }
+}
+initDictionary();

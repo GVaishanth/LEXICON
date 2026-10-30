@@ -2,7 +2,7 @@
 
 ## 1. Delivery model
 
-This is a static, client-side ES-module application. `index.html` links `css/style.css` and imports `js/app.js` with relative URLs; `app.js` imports the four local data/engine modules. GitHub Pages can serve the repository root or a project subdirectory without rewriting paths or running a build: the repository ships `.nojekyll` (no Jekyll processing) and `.github/workflows/pages.yml`, which uploads the root as-is on every push to `main` when the Pages source is set to *GitHub Actions*. There is no backend, authentication, scoreboard service, or scheduled job.
+This is a static, client-side ES-module application. `index.html` links `css/style.css` and imports `js/app.js` with relative URLs; `app.js` imports the local data, engine and dictionary modules. GitHub Pages can serve the repository root or a project subdirectory without rewriting paths or running a build: the repository ships `.nojekyll` (no Jekyll processing) and `.github/workflows/pages.yml`, which uploads the root as-is on every push to `main` when the Pages source is set to *GitHub Actions*. There is no backend, authentication, scoreboard service, or scheduled job.
 
 Gameplay, the bundled word archive, and the Education stories work without network requests. Post-game definitions (`dictionaryapi.dev`), optional Google Fonts, source links, and the browser's native sharing capabilities may use a connection. No request is made to upload play history.
 
@@ -17,12 +17,19 @@ Gameplay, the bundled word archive, and the Education stories work without netwo
 | `js/game.js` | Pure-ish game engines: `Game`, `HangmanGame`, `AnagramGame`, `MarathonGame`, `BattleGame`; evaluation and Hard Mode validation. |
 | `js/leaderboard.js` | Local-day normalization, scored-solo grouping, best/recent ordering, day streaks. |
 | `js/education.js` | 36 independently edited, sourced histories with offline search and category filtering. |
-| `js/app.js` | Single-page view router, DOM creation, settings, feedback, persistence, clock display, definitions, sharing, and the motion layer (entrance timeline, tilt, sliding indicators, text/icon swaps). |
+| `data/dictionary.txt` | The word list: 370,054 lowercase alphabetic words, one per line, sorted. Stored in IndexedDB. Used for search suggestions, ghost autocomplete and the random word on the Open Shelf. |
+| `data/dictionary-version.txt` | Content hash of the word list. Checked on each visit; the full list is downloaded only when it changes. |
+| `js/store.js` | IndexedDB layer (database `lexicon-vi`, version 2, stores `lists`, `entries` and `history`). Falls back to in-memory storage where IndexedDB is unavailable. |
+| `js/dictionary.js` | Dictionary helpers: `loadWordList()` (IndexedDB first, background refresh about daily), `hasWord()`, `rankSuggestions()` (ranked search cards), `loadUsage()` and `recordLookup()` (personal use), and `lookupWord()` (memory, then IndexedDB, then the Free Dictionary API with timeouts and retries). |
+| `js/app.js` | Single-page view router, DOM creation, settings, feedback, persistence, clock display, dictionary search wiring, sharing, and the motion layer (entrance timeline, tilt, sliding indicators, text/icon swaps). |
 | `js/vendor/gsap.min.js`, `js/vendor/Flip.min.js` | GSAP 3.15 core and Flip plugin, vendored locally and loaded as classic scripts before `app.js`. No CDN dependency; the page works fully offline. |
-| `PRODUCT.md` | Audience, purpose and product principles recorded for design decisions. |
-| `DESIGN.md` | The *Archival Lexicography & Tactile Folio* system: colour/type/surface tokens and the motion token ladder. |
+| `sw.js` | Service worker. Precaches the shell (`lexicon-vi-vN` cache) so the site opens offline after the first visit. Bump the version when shipped files change. |
+| `manifest.webmanifest`, `icons/` | Web app manifest and home-screen icons (192 and 512 px). |
+| `index.html` head | Local stylesheet and scripts only; GSAP loads from `js/vendor/`. |
+| `.github/workflows/pages.yml` | GitHub Pages deployment of the repository root. No build step. |
+| `.nojekyll` | Tells GitHub Pages to serve the files as-is. |
 | `scripts/generate_words.py` | Optional maintenance command that fetches archive sources and rewrites `js/words.js`. Not used by the deployed page. |
-| `scripts/verify.mjs` | Dependency-free checks for evaluation, Battle resolution, data shapes and personal-day calculations. Not needed in production. |
+| `scripts/generate_dictionary.py` | Optional maintenance command that builds `data/dictionary.txt` and `data/dictionary-version.txt` from the dwyl/english-words list. Not used by the deployed page. |
 
 ## 3. Navigation and session model
 
@@ -45,15 +52,48 @@ An invalid or incomplete guess stays in the current turn and does not advance th
 
 `BattleGame` uses `performance.now()` while the turn is active and accumulates milliseconds when paused. Review, handoff, hidden tabs and dialogs pause the clock. Zen makes the whole current match untimed; turning Zen off does not re-enable its clock or score it. Match summaries are persisted separately from solo history.
 
-## 5. Education and optional definitions
+## 5. Education and dictionary
 
 `js/education.js` exposes categories and text filtering across word, origin, root, story and detail. The 36 stories are static, original editorial summaries with an external Wiktionary link attached to each entry. Selecting a card swaps the feature panel; search/filter changes only the Education view. No education interaction modifies game statistics.
+
+The Education search box is also a dictionary over the 370,054 words in `data/dictionary.txt`.
+
+| Tier | Base score | Rule |
+| --- | --- | --- |
+| Exact word | 4000 | The query is a listed word. |
+| Starts with | 3000 | The word begins with the query. Found by binary search. |
+| Close spelling | 2000 | The word's first letters are one insertion, deletion or substitution from the query. Queries of four or more letters only. |
+| Contains | 1000 | The query appears inside the word. |
+
+Inside a tier, the score adds up to 500 for closeness of length (query length divided by word length), up to 240 for earlier lookups (80 each, capped at 3), and 40 for a lookup in the last seven days. Ties sort alphabetically. Because the tiers are spaced apart, personal use can reorder results within a tier but never lift a weaker match type above a stronger one. Lookup counts are kept in the IndexedDB `history` store. Keyboard: ArrowDown enters the cards, arrow keys move between them, and Escape returns to the search box. The first Escape closes the cards; a second one leaves Education.
+
+Each entry is cached in the IndexedDB `entries` store, so repeat lookups work offline. Burst refusals and server errors are retried with a short backoff; requests time out after 8 seconds; an offline request shows a notice while word search keeps working. Definitions saved by the earlier localStorage cache move to IndexedDB the first time they are read.
+
+**Fast word list.** On first visit the page fetches `data/dictionary.txt` while idle and stores it in IndexedDB with its version. Later visits read the stored text from IndexedDB and split it into words, with no network request for the list itself. Each visit also fetches the small version file; the full list is downloaded again only when the version changes. Prefix and completion lookups use binary search over the sorted list. Close-spelling checks look only at words that share the query's first letter, which keeps each keystroke fast in a list of this size.
+
+**Word list source.** Every alphabetic word in the dwyl/english-words list (Unlicense) is kept, after removing contraction fragments such as "don" and "ll". Single letters are kept only for "a" and "i". Hyphenated and apostrophe forms are not included.
+
+
+
+**Open Shelf.** Each visit to the Reading Room shuffles the 36 curated stories, and the featured story never repeats the previous visit's. A random-word card above the search box shows a word from the dictionary, with its first definition, and its "Read the entry" button opens the full panel. The card skips words the API does not know, and a slow response never overwrites a newer word.
+
+Search covers the full dictionary list held in IndexedDB. Suggestions are ranked as described above.
 
 Definitions are separate from Education. After a solved game or match, an optional request to `dictionaryapi.dev` displays part of speech, definition, example and phonetic when available. The request has a timeout, caches successful words in memory, and is guarded against showing an old response after navigation. Unavailable definitions leave the result intact.
 
 ## 6. Storage and personal-day ranking
 
-The browser's `localStorage` holds all persistent state. Reads tolerate missing or malformed JSON; writes are guarded for storage-restricted browsers.
+The browser's `localStorage` holds game and preference state. Reads tolerate missing or malformed JSON; writes are guarded for storage-restricted browsers.
+
+**IndexedDB (`lexicon-vi`, version 1)** holds the dictionary data, which is larger and read more often:
+
+| Store | Key | Content |
+| --- | --- | --- |
+| `lists` | `dictionary` | `{ version, text }` for the Education word list. |
+| `entries` | lowercase word | Cached definition, phonetic, audio URL and meanings. |
+| `history` | lowercase word | `{ count, last }` for ranking suggestion cards by personal use. |
+
+The page asks the browser to keep this data under storage pressure (best effort). Without IndexedDB, the dictionary still works for the session from memory.
 
 | Key | Content |
 | --- | --- |
@@ -69,7 +109,7 @@ The browser's `localStorage` holds all persistent state. Reads tolerate missing 
 
 The interface uses buttons, headings, labels, `aria-pressed` for filters/sorts, visible focus styles, status announcements and keyboard input for guesses. The Battle curtain is a labeled modal-style barrier, with the game, top navigation and footer made inert while it covers the screen, plus keyboard focus contained inside the curtain (the collapsed navigation drawer is `visibility: hidden`, so keyboard focus never enters clipped content). Mobile boards and navigation fit a narrow viewport; the keyboard remains reachable while scrolling.
 
-Motion is layered deliberately, following the token ladder in `DESIGN.md`:
+Motion is layered deliberately, following the motion tokens defined at the top of `css/style.css` (`--duration-*`, `--ease-*`):
 
 - **CSS transitions** carry every interactive state (press `scale(.96)`, hover, toggles, drawer accordion, modal open/close asymmetry, toast rise, icon and text swaps). Interactive transitions are interruptible by design; keyframes are reserved for one-shot sequences (tile flips, shake, view entrance).
 - **GSAP** carries the single authored moment — the hero entrance timeline, run once per page load inside a `gsap.matchMedia('(prefers-reduced-motion: no-preference)')` guard — plus `Flip` re-flow when the Education collection filters, and the width tween of the sliding pill indicators so no layout property sits in a CSS transition.
